@@ -1,4 +1,4 @@
-# macOS-Jailbreak
+## macOS-Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
 Tested on macOS 14 and macOS 15
@@ -8,10 +8,10 @@ This guide is very technical and will take some time to complete on the first at
 I am not responsible for any damage caused by following these instructions. Please make sure you have a backup of your data beforehand as things could go wrong.
 Let us begin!
 
-1. Kernel Patches
+# 1. Kernel Patches
 
 
-1a. Compiling & Using img4
+## 1a. Compiling & Using img4
 
 First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch.
 
@@ -59,7 +59,7 @@ Copy the extracted kernelcache to new file, allowing us to create a patched vers
 
 `cp -v kcache.raw kcache.patched`
 
-1b. Trustcache Patch
+## 1b. Trustcache Patch
 
 We will be using Radare2 for the first patch, install it using homebrew
 
@@ -89,14 +89,14 @@ Once in assembler mode at the instruction replace the instructions with:
 
 Press enter to save the changes and press q to exit assembler mode, then press q and enter again to exit Radare2.
 
-1c. Read/Write RootFS Patch
+## 1c. Read/Write RootFS Patch
 
 Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin
 Use KPlooshFinder on our patched kernel to apply the second patch.
 
 `KPlooshFinder kcache.patched kcache.readwrite`
 
-1d. Reducing Security & Installing the Kernel
+## 1d. Reducing Security & Installing the Kernel
 
 We will now need to reboot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see "Continue holding for startup options...". Keep holding down the power button until you see "Loading startup options...", at this point you can stop holding the button down.
 
@@ -113,7 +113,7 @@ We will need to add boot arguments now to further relax system restrictions. Run
 sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"
 Reboot the system to apply the boot arguments.
 
-2. Dyld Patches
+# 2. Dyld Patches
 
 We will need to now begin patching dyld. I'm going to stay organized and keep these files in a different directory
 
@@ -130,7 +130,7 @@ Dopamine's Patch --> https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/s
 Palera1n's DYLD_IN_CACHE Patch --> https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51
 
 
-2a. Dopamine's Patch
+## 2a. Dopamine's Patch
 
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (If you can't find the symbol, try searching for the demangled one):
 
@@ -139,7 +139,7 @@ Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the 
 Dopamine Symbol: __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
 Demangled Symbol: _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 
-2b. Palera1n's DYLD_IN_CACHE Patch
+## 2b. Palera1n's DYLD_IN_CACHE Patch
 
 Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
@@ -177,7 +177,7 @@ Type this command to replace dyld, this will cause every process on your system 
 
 `sudo cp -v dyld /usr/lib/dyld`
 
-3. Installing Ellekit
+# 3. Installing Ellekit
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
 
@@ -211,7 +211,7 @@ Make a CydiaSubstrate symlink for easy tweak injection:
 `sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
 sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate`
 
-4. Installing AppSync
+# 4. Installing AppSync
  
 To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync
 
