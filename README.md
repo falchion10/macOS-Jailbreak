@@ -13,9 +13,9 @@ Let us begin!
 
 ## 1a. Compiling & Using img4
 
-First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch.
+First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch
 
-You'll need to compile img4lib from source on your mac machine as there are no currently available arm64 binaries.
+You'll need to compile img4lib from source on your mac machine as there are no currently available arm64 binaries:
 
 `git clone --recursive https://github.com/xerub/img4lib.git`
 
@@ -41,35 +41,35 @@ Compile the project:
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
-To keep things organized I'm going to be creating a folder named Jailbreak in my home directory.
+To keep things organized I'm going to be creating a folder named Jailbreak in my home directory:
 
 `mkdir -p ~/Jailbreak 
 cd ~/Jailbreak mkdir KPatch 
 cd KPatch`
 
-To begin with the kernel modifications we will need to use img4 on our current kernelcache.
+To begin with the kernel modifications we will need to use img4 on our current kernelcache:
 
 `img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw`
 
-I recommend creating a copy of your original kernelcache just in case any modifications go wrong.
+I recommend creating a copy of your original kernelcache just in case any modifications go wrong:
 
 `cp -v kcache.raw kcache.raw.backup`
 
-Copy the extracted kernelcache to new file, allowing us to create a patched version.
+Copy the extracted kernelcache to new file, allowing us to create a patched version:
 
 `cp -v kcache.raw kcache.patched`
 
 ## 1b. Trustcache Patch
 
-We will be using Radare2 for the first patch, install it using homebrew
+We will be using Radare2 for the first patch, install it using homebrew:
 
 `brew install radare2`
 
-Open our ready to patch kernelcache in Radare2
+Open our ready to patch kernelcache in Radare2:
 
 `r2 -w kcache.patched`
 
-Find this pattern in radare2:
+Find this pattern in Radare2:
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
 
 `/x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff`
@@ -77,17 +77,17 @@ When Radare2 is finished initializing all the kexts, type in this command to fin
 Source for trustcache patch:
 https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c
 
-We need to write new instructions in Radare2, to do this type "V" to enter visual mode, then type "g" and paste in the address you found earlier. 
-When you are at the address use "J" and "K" to scroll up and down respectively. 
-We will need to scroll up a few lines. Once you've scrolled up type "A" to enter the assembler mode. 
-You're going to want to find the "AMFIIsCDHashInTrustCache" function, below this function you should see an instruction named "pacibsp". 
+We need to write new instructions in Radare2, to do this type "v" to enter visual mode, then type "g" and paste in the address you found earlier. 
+When you are at the address use "j" and "j" to scroll up and down respectively. 
+We will need to scroll up a few lines. Once you've scrolled up type "a" to enter the assembler mode. 
+You're going to want to find the `AMFIIsCDHashInTrustCache` function, below this function you should see an instruction named `pacibsp`. 
 Save the address for this instruction "q" to quit out of assembler mode, you should be back in visual mode. 
-Type "g" and go to the address of the "pacibsp" instruction, then type "A" to enter assembler mode again. 
+Type "g" and go to the address of the `pacibsp` instruction, then type "a" to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
 `mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret`
 
-Press enter to save the changes and press q to exit assembler mode, then press q and enter again to exit Radare2.
+Press "return" to save the changes and press "q" to exit assembler mode, then press "q" and "return" again to exit Radare2.
 
 ## 1c. Read/Write RootFS Patch
 
@@ -102,16 +102,17 @@ We will now need to reboot into 1 True Recovery (1TR). To enter 1TR shut down yo
 
 Once you are in startup options menu select "Options" with the settings icon. Type your password to authenticate then open terminal by pressing "Utilities" at the top of the menu bar.
 
-We will need to disable System Integrity Protection and the Secure System Volume. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands.
+We will need to disable System Integrity Protection and the Secure System Volume. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
 
-Disable SIP: csrutil disable
-Disable SSV: csrutil authenticated-root disable
-Install Kernel: kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite
-Reboot the system: reboot
+Disable SIP: `csrutil disable`
+Disable SSV: `csrutil authenticated-root disable`
+Install Kernel: `kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite`
+Reboot the system: `reboot`
 
-We will need to add boot arguments now to further relax system restrictions. Run this command (The "-v" is optional, all it does is enable verbose booting):
-sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"
-Reboot the system to apply the boot arguments.
+We will need to add boot arguments now to further relax system restrictions. Run these commands (The `-v` is optional, all it does is enable verbose booting):
+
+`sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"`
+`reboot`
 
 # 2. Dyld Patches
 
@@ -122,6 +123,7 @@ mkdir DPatch
 cd DPatch`
 
 Copy dyld into our workspace and create a backup:
+
 `cp -v /usr/lib/dyld ./dyld
 cp -v dyld dyld.backup`
 
@@ -169,7 +171,7 @@ Run these two commands to mount the root filesystem as read/write, and to create
 `sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
 
-You will need to use ldid on dyld, you can get ldid from procursus. There's a guide on how to get procursus installed in the procursus discord.
+You will need to use ldid on dyld, you can get ldid from Procursus. There's a guide on how to get Procursus installed on the Procursus Discord.
 
 `ldid -S dyld -Icom.apple.darwin.ignition`
 
@@ -225,3 +227,11 @@ Put both of them in: `/Library/TweakInject`
 Add macosx to the CydiaSubstrate, otherwise it wont link
 
 Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps
+
+# 5. Optional Tweaks
+
+These tweaks are optional, but can be useful. 
+
+## Mounting root as read/write on boot
+By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
+Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
