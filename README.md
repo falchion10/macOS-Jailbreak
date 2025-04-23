@@ -127,8 +127,8 @@ We will need to now begin patching dyld. I'm going to stay organized and keep th
 
 Copy dyld into our workspace and create a backup:
 
-`cp -v /usr/lib/dyld ./dyld`
-`cp -v dyld dyld.backup`
+        cp -v /usr/lib/dyld ./dyld
+        cp -v dyld dyld.backup
 
 The patches for dyld are:
 Dopamine's Patch --> https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22
@@ -139,7 +139,7 @@ Palera1n's DYLD_IN_CACHE Patch --> https://github.com/palera1n/jbinit/blob/c1015
 
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (If you can't find the symbol, try searching for the demangled one):
 
-`mov x0, 0xdf; ret`
+        mov x0, 0xdf; ret
 
 Dopamine Symbol: __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
 Demangled Symbol: _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
@@ -150,7 +150,7 @@ Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 Find this pattern:
 
-        `0xaa1303e0, // mov x0, x19
+        0xaa1303e0, // mov x0, x19
         0x94000000, // bl dyld4::KernelArgs::findEnvp
         0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
         0x91000021, // add x1, "DYLD_IN_CACHE"@PAGEOFF
@@ -159,12 +159,12 @@ Find this pattern:
         0x90000001, // adrp x1, "0"@PAGE
         0x91000021, // add x1, "0"@PAGEOFF
         0x94000000, // bl strcmp
-        0x34000000  // cbz w0, ...`
+        0x34000000  // cbz w0, ...
 
 Replace the pattern with:
 
-        `stream[5] = 0xd503201f; /* nop */
-        stream[8] = 0x52800000; /* mov w0, #0 */`
+        stream[5] = 0xd503201f; /* nop */
+        stream[8] = 0x52800000; /* mov w0, #0 */
         
 This will make it so it never gets called.
 Save changes with cmd+s
