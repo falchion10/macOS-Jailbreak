@@ -3,10 +3,6 @@ Tutorial on how to jailbreak Apple Silicon Macs
 
 Tested on macOS 14 and macOS 15
 
-This guide is a bit technical, also it was mainly just personal notes, but people requested it to be released, so here we are.
-Please only try at your own risk and always keep a backup.
-This will lower system security substantially, and is not recommended on any important machine.
-
 This guide is very technical and will take some time to complete on the first attempt. If you aren't comfortable disabling System Integrity Protection (SIP) or the Secured System Volume (SSV) please do not continue with the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of ellekit.
 
 I am not responsible for any damage caused by following these instructions. Please make sure you have a backup of your data beforehand as things could go wrong.
@@ -17,30 +13,27 @@ Let us begin!
 First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch.
 
 You'll need to compile img4lib from source on your mac machine as there are no currently available arm64 binaries.
-git clone --recursive https://github.com/xerub/img4lib.git
+`git clone --recursive https://github.com/xerub/img4lib.git`
 
 Install lzfse and openssl from homebrew:
-brew install lzfse openssl@3
+`brew install lzfse openssl@3`
 
 Edit the Makefile for img4lib:
-nano Makefile
+`nano Makefile`
 
 Add a CFLAGS line:
-CFLAGS += -I/opt/homebrew/include
+`CFLAGS += -I/opt/homebrew/include`
 
 And an LDFLAGS line:
-LDFLAGS += -L/opt/homebrew/lib
+`LDFLAGS += -L/opt/homebrew/lib`
 
 Compile the project:
-make
+`make`
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory.
-mkdir -p ~/Jailbreak
-cd ~/Jailbreak
-mkdir KPatch
-cd KPatch
+```mkdir -p ~/Jailbreak cd ~/Jailbreak mkdir KPatch cd KPatch```
 
 To begin with the kernel modifications we will need to use img4 on our current kernelcache.
 img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw
