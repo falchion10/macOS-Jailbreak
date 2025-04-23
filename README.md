@@ -145,9 +145,10 @@ Copy dyld into our workspace and create a backup:
 `cp -v dyld dyld.backup`
 
 The patches for dyld are:
-Dopamine's Patch --> https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22
-Palera1n's DYLD_IN_CACHE Patch --> https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51
 
+[Dopamine's Patch](https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22)
+
+[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51)
 
 ## 2a. Dopamine's Patch
 
