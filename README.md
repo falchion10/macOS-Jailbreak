@@ -44,7 +44,9 @@ You will now have a binary of img4, I recommend moving it to /usr/local/bin
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory:
 
 `mkdir -p ~/Jailbreak`
+
 `cd ~/Jailbreak mkdir KPatch`
+
 `cd KPatch`
 
 To begin with the kernel modifications we will need to use img4 on our current kernelcache:
@@ -104,17 +106,22 @@ Once you are in startup options menu select "Options" with the settings icon. Ty
 
 We will need to disable System Integrity Protection and the Secure System Volume. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
 
-Disable SIP: `csrutil disable`
+Disable SIP:
+`csrutil disable`
 
-Disable SSV: `csrutil authenticated-root disable`
+Disable SSV:
+`csrutil authenticated-root disable`
 
-Install Kernel: `kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite`
+Install Kernel:
+`kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite`
 
-Reboot the system: `reboot`
+Reboot the system:
+`reboot`
 
 We will need to add boot arguments now to further relax system restrictions. Run these commands (The `-v` is optional, all it does is enable verbose booting):
 
 `sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"`
+
 `reboot`
 
 # 2. Dyld Patches
@@ -122,14 +129,16 @@ We will need to add boot arguments now to further relax system restrictions. Run
 We will need to now begin patching dyld. I'm going to stay organized and keep these files in a different directory
 
 `cd ~/Jailbreak`
+
 `mkdir DPatch`
+
 `cd DPatch`
 
 Copy dyld into our workspace and create a backup:
 
-        cp -v /usr/lib/dyld ./dyld
+`cp -v /usr/lib/dyld ./dyld`
         
-        cp -v dyld dyld.backup
+`cp -v dyld dyld.backup`
 
 The patches for dyld are:
 Dopamine's Patch --> https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22
@@ -142,8 +151,13 @@ Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the 
 
         mov x0, 0xdf; ret
 
-Dopamine Symbol: __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
-Demangled Symbol: _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
+Dopamine Symbol:
+
+        __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
+
+Demangled Symbol:
+
+        _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 
 ## 2b. Palera1n's DYLD_IN_CACHE Patch
 
@@ -173,6 +187,7 @@ Save changes with cmd+s
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld.
 
 `sudo mount -uw /`
+
 `sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
 
 You will need to use ldid on dyld, you can get ldid from Procursus. There's a guide on how to get Procursus installed on the Procursus Discord.
@@ -188,6 +203,7 @@ Ellekit is the tweak injection platform we will be using for certain tweaks, suc
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
 
 `git clone https://github.com/tealbathingsuit/ellekit`
+
 `MAC=1 make`
 
 There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (You'll get an error about timestamps, ignore it):
@@ -209,12 +225,15 @@ Place the launch daemon from com.evln.ellekit.startup.plist to /Library/LaunchDa
 Set the correct permissions & reboot:
 
 `sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+
 `sudo chown root:wheel /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+
 `reboot`
 
 Make a CydiaSubstrate symlink for easy tweak injection:
 
 `sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework`
+
 `sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate`
 
 # 4. Installing AppSync
