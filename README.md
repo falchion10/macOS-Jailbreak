@@ -74,7 +74,7 @@ Open our ready to patch kernelcache in Radare2:
 Find this pattern in Radare2:
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
 
-`/x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff`
+        /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
 
 Source for trustcache patch:
 https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c
@@ -87,7 +87,7 @@ Save the address for this instruction "q" to quit out of assembler mode, you sho
 Type "g" and go to the address of the `pacibsp` instruction, then type "a" to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
-`mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret`
+        mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
 
 Press "return" to save the changes and press "q" to exit assembler mode, then press "q" and "return" again to exit Radare2.
 
@@ -107,15 +107,19 @@ Once you are in startup options menu select "Options" with the settings icon. Ty
 We will need to disable System Integrity Protection and the Secure System Volume. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
 
 Disable SIP:
+
 `csrutil disable`
 
 Disable SSV:
+
 `csrutil authenticated-root disable`
 
 Install Kernel:
+
 `kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite`
 
 Reboot the system:
+
 `reboot`
 
 We will need to add boot arguments now to further relax system restrictions. Run these commands (The `-v` is optional, all it does is enable verbose booting):
