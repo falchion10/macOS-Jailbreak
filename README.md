@@ -128,6 +128,7 @@ We will need to now begin patching dyld. I'm going to stay organized and keep th
 Copy dyld into our workspace and create a backup:
 
         cp -v /usr/lib/dyld ./dyld
+        
         cp -v dyld dyld.backup
 
 The patches for dyld are:
