@@ -10,53 +10,72 @@ Let us begin!
 
 1. Kernel Patches
 
+
+1a. Compiling & Using img4
+
 First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch.
 
 You'll need to compile img4lib from source on your mac machine as there are no currently available arm64 binaries.
+
 `git clone --recursive https://github.com/xerub/img4lib.git`
 
 Install lzfse and openssl from homebrew:
+
 `brew install lzfse openssl@3`
 
 Edit the Makefile for img4lib:
+
 `nano Makefile`
 
 Add a CFLAGS line:
+
 `CFLAGS += -I/opt/homebrew/include`
 
 And an LDFLAGS line:
+
 `LDFLAGS += -L/opt/homebrew/lib`
 
 Compile the project:
+
 `make`
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory.
-```mkdir -p ~/Jailbreak cd ~/Jailbreak mkdir KPatch cd KPatch```
+
+`mkdir -p ~/Jailbreak 
+cd ~/Jailbreak mkdir KPatch 
+cd KPatch`
 
 To begin with the kernel modifications we will need to use img4 on our current kernelcache.
-img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw
+
+`img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw`
 
 I recommend creating a copy of your original kernelcache just in case any modifications go wrong.
-cp -v kcache.raw kcache.raw.backup
+
+`cp -v kcache.raw kcache.raw.backup`
 
 Copy the extracted kernelcache to new file, allowing us to create a patched version.
-cp -v kcache.raw kcache.patched
+
+`cp -v kcache.raw kcache.patched`
+
+1b. Trustcache Patch
 
 We will be using Radare2 for the first patch, install it using homebrew
-brew install radare2
+
+`brew install radare2`
 
 Open our ready to patch kernelcache in Radare2
-r2 -w kcache.patched
+
+`r2 -w kcache.patched`
 
 Find this pattern in radare2:
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
-/x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
 
-source for trustcache patch:
+`/x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff`
+
+Source for trustcache patch:
 https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c
-( new patch )
 
 We need to write new instructions in Radare2, to do this type "V" to enter visual mode, then type "g" and paste in the address you found earlier. 
 When you are at the address use "J" and "K" to scroll up and down respectively. 
@@ -66,16 +85,18 @@ Save the address for this instruction "q" to quit out of assembler mode, you sho
 Type "g" and go to the address of the "pacibsp" instruction, then type "A" to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
-mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
+`mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret`
 
 Press enter to save the changes and press q to exit assembler mode, then press q and enter again to exit Radare2.
 
+1c. Read/Write RootFS Patch
 
 Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin
 Use KPlooshFinder on our patched kernel to apply the second patch.
 
-KPlooshFinder kcache.patched kcache.readwrite
+`KPlooshFinder kcache.patched kcache.readwrite`
 
+1d. Reducing Security & Installing the Kernel
 
 We will now need to reboot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see "Continue holding for startup options...". Keep holding down the power button until you see "Loading startup options...", at this point you can stop holding the button down.
 
@@ -95,32 +116,36 @@ Reboot the system to apply the boot arguments.
 2. Dyld Patches
 
 We will need to now begin patching dyld. I'm going to stay organized and keep these files in a different directory
-cd ~/Jailbreak
+
+`cd ~/Jailbreak
 mkdir DPatch
-cd DPatch
+cd DPatch`
 
 Copy dyld into our workspace and create a backup:
-cp -v /usr/lib/dyld ./dyld
-cp -v dyld dyld.backup
+`cp -v /usr/lib/dyld ./dyld
+cp -v dyld dyld.backup`
 
 The patches for dyld are:
-Dopamine's Patch - https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22
-Palera1n's DYLD_IN_CACHE Patch - https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51
+Dopamine's Patch --> https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22
+Palera1n's DYLD_IN_CACHE Patch --> https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51
 
 
 2a. Dopamine's Patch
+
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (If you can't find the symbol, try searching for the demangled one):
 
-mov x0, 0xdf; ret
+`mov x0, 0xdf; ret`
 
 Dopamine Symbol: __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
 Demangled Symbol: _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 
 2b. Palera1n's DYLD_IN_CACHE Patch
+
 Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 Find this pattern:
-        0xaa1303e0, // mov x0, x19
+
+        `0xaa1303e0, // mov x0, x19
         0x94000000, // bl dyld4::KernelArgs::findEnvp
         0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
         0x91000021, // add x1, "DYLD_IN_CACHE"@PAGEOFF
@@ -129,64 +154,73 @@ Find this pattern:
         0x90000001, // adrp x1, "0"@PAGE
         0x91000021, // add x1, "0"@PAGEOFF
         0x94000000, // bl strcmp
-        0x34000000  // cbz w0, ...
+        0x34000000  // cbz w0, ...`
 
 Replace the pattern with:
-        stream[5] = 0xd503201f; /* nop */
-        stream[8] = 0x52800000; /* mov w0, #0 */
+
+        `stream[5] = 0xd503201f; /* nop */
+        stream[8] = 0x52800000; /* mov w0, #0 */`
+        
 This will make it so it never gets called.
 Save changes with cmd+s
 
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld.
-sudo mount -uw /
-sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
+
+`sudo mount -uw /
+sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
 
 You will need to use ldid on dyld, you can get ldid from procursus. There's a guide on how to get procursus installed in the procursus discord.
-ldid -S dyld -Icom.apple.darwin.ignition
+
+`ldid -S dyld -Icom.apple.darwin.ignition`
 
 Type this command to replace dyld, this will cause every process on your system to be killed. Force restart by holding the power button.
-sudo cp -v dyld /usr/lib/dyld
+
+`sudo cp -v dyld /usr/lib/dyld`
 
 3. Installing Ellekit
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
 
-git clone https://github.com/tealbathingsuit/ellekit
-MAC=1 make
+`git clone https://github.com/tealbathingsuit/ellekit
+MAC=1 make`
 
 There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (You'll get an error about timestamps, ignore it):
 
-sudo tar -xvf ellekit.tar.gz -C /
+`sudo tar -xvf ellekit.tar.gz -C /`
 
 Resign the loader with loader.xml:
 
-ldid -Sloader.xml /usr/local/bin/loader
+`ldid -Sloader.xml /usr/local/bin/loader`
 
 Copy the loader to /Library/TweakInject/loader:
-sudo cp -v /usr/local/bin/loader /Library/TweakInject/loader
+
+`sudo cp -v /usr/local/bin/loader /Library/TweakInject/loader`
 
 Place the launch daemon from com.evln.ellekit.startup.plist to /Library/LaunchDaemons:
-sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist
 
-Set the correct permissions:
-sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist
+`sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+
+Set the correct permissions & reboot:
+
+`sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist
 sudo chown root:wheel /Library/LaunchDaemons/com.evln.ellekit.startup.plist
-reboot
+reboot`
 
 Make a CydiaSubstrate symlink for easy tweak injection:
 
-sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
-sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate
+`sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
+sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate`
 
 4. Installing AppSync
  
 To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync
-mv ~/theos/vendor/include/IOKit ~/theos/vendor/include/IOKit.bak
 
-mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit
+`mv ~/theos/vendor/include/IOKit ~/theos/vendor/include/IOKit.bak`
+
+`mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit`
 
 You'll need to compile appsync for macOS, you only need the installd dylib and the plist included with it
-Put both of them in: /Library/TweakInject
+Put both of them in: `/Library/TweakInject`
 
 Add macosx to the CydiaSubstrate, otherwise it wont link
 
