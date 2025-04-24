@@ -207,7 +207,8 @@ Type this command to replace dyld, this will cause every process on your system 
 `sudo cp -v dyld /usr/lib/dyld`
 
 # 3. Installing Ellekit
-Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync
+Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync.
+
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
 
 `git clone https://github.com/tealbathingsuit/ellekit`
@@ -253,6 +254,7 @@ To setup Theos for macOS you need to move this directory, move it back after you
 `mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit`
 
 You'll need to compile appsync for macOS, you only need the installd dylib and the plist included with it
+
 Put both of them in: `/Library/TweakInject`
 
 Add macosx to the CydiaSubstrate, otherwise it wont link
@@ -267,6 +269,7 @@ These tweaks are optional, but can be useful.
 
 ## Mounting root as read/write on boot
 By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
+
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
 
 ## Removing software update notifications
