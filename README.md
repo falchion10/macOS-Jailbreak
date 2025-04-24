@@ -3,11 +3,11 @@ Tutorial on how to jailbreak Apple Silicon Macs
 
 Tested on macOS 14 and macOS 15
 
-This guide is very technical and will take some time to complete on the first attempt. If you aren't comfortable disabling System Integrity Protection (SIP) or the Secured System Volume (SSV) please do not continue with the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of ellekit.
+This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) or the Secured System Volume (SSV) please do not continue with the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
 ## Preliminary Note about updates
 
-You can still update macOS after following this guide, HOWEVER, when attempting to update re-enable SIP in 1 True Recovery. This will erase all rootfs changes, custom kernel changes, and dyld changes. This is REQUIRED to update, if you do not do this beforehand your system will bootloop after the update has been applied, this can be fixed though by re-enabling SIP. After an update you will need to redo the entire guide. I'm not sure how Rapid Security Releases (RSRs) react to these changes, it can be assumed that they would either fail or cause issues. Apple hasn't pushed any RSRs in the past two years though so it can be assumed that RSRs are dead (The last RSR that was pushed was for macOS 13.3.1).
+You can still update macOS after following this guide, HOWEVER, when attempting to update re-enable SIP in 1 True Recovery. This will erase all rootfs changes, custom kernel changes, and dyld changes. This is REQUIRED to update, if you do not do this beforehand your system will bootloop after the update has been applied, this can be fixed though by re-enabling SIP. After an update you will need to redo the entire guide. I'm not sure how Rapid Security Releases (RSRs) react to these changes, it can be assumed that they would either fail or cause issues. Apple hasn't pushed any RSRs in the past two years though so it can be assumed that RSRs are dead (the last RSR that was pushed was for macOS 13.3.1).
 
 I am not responsible for any damage caused by following these instructions. Please make sure you have a backup of your data beforehand as things could go wrong.
 Let us begin!
@@ -17,7 +17,7 @@ Let us begin!
 
 ## 1a. Compiling & Using img4
 
-First, we will need to do two kernel patches, a trustcache patch, along with a file system mounting patch
+First, we will need to do two kernel patches, a trustcache patch, along with a file system read/write patch.
 
 You'll need to compile img4lib from source on your Mac machine as there are no currently available arm64 binaries:
 
@@ -67,7 +67,7 @@ Copy the extracted kernelcache to new file, allowing us to create a patched vers
 
 ## 1b. Trustcache Patch
 
-We will be using Radare2 for the first patch, install it using homebrew:
+We will be using Radare2, a reverse engineering tool, for the first patch, install it using homebrew:
 
 `brew install radare2`
 
@@ -79,11 +79,11 @@ When Radare2 is finished initializing all the kexts, type in this command to fin
 
         /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
 
-[Source](https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c) for trustcache patch
+[Source](https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c) for the trustcache patch
 
 
 We need to write new instructions in Radare2, to do this type "v" to enter visual mode, then type "g" and paste in the address you found earlier. 
-When you are at the address use "j" and "j" to scroll up and down respectively. 
+When you are at the address use "j" and "k" to scroll up and down respectively. 
 We will need to scroll up a few lines. Once you've scrolled up type "a" to enter the assembler mode. 
 You're going to want to find the `AMFIIsCDHashInTrustCache` function, below this function you should see an instruction named `pacibsp`. 
 Save the address for this instruction "q" to quit out of assembler mode, you should be back in visual mode. 
@@ -103,7 +103,7 @@ Use KPlooshFinder on our patched kernel to apply the second patch.
 
 ## 1d. Reducing Security & Installing the Kernel
 
-We will now need to reboot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see "Continue holding for startup options...". Keep holding down the power button until you see "Loading startup options...", at this point you can stop holding the button down.
+We will now need to boot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see "Continue holding for startup options...". Keep holding down the power button until you see "Loading startup options...", at this point you can stop holding the button down.
 
 Once you are in startup options menu select "Options" with the settings icon. Type your password to authenticate then open terminal by pressing "Utilities" at the top of the menu bar.
 
@@ -119,7 +119,7 @@ Disable SSV:
 
 Install Kernel:
 
-`kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[Username]/Jailbreak/KPatch/kcache.readwrite`
+`kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[username]/Jailbreak/KPatch/kcache.readwrite`
 
 Reboot the system:
 
@@ -133,7 +133,7 @@ We will need to add boot arguments now to further relax system restrictions. Run
 
 # 2. Dyld Patches
 
-We will need to now begin patching dyld. I'm going to stay organized and keep these files in a different directory
+We will now begin patching dyld. I'm going to stay organized and keep these files in a different directory
 
 `cd ~/Jailbreak`
 
@@ -198,7 +198,7 @@ Run these two commands to mount the root filesystem as read/write, and to create
 
 `sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
 
-You will need to use ldid on dyld, you can get ldid from Procursus. There's a guide on how to get Procursus installed on the Procursus Discord.
+You will need to use ldid on dyld, you can get ldid from Procursus. There's a guide on how to get Procursus installed on the [Procursus Discord](https://discord.gg/HA9N9FQhRu).
 
 `ldid -S dyld -Icom.apple.darwin.ignition`
 
@@ -257,7 +257,9 @@ Put both of them in: `/Library/TweakInject`
 
 Add macosx to the CydiaSubstrate, otherwise it wont link
 
-Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps
+Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps.
+
+
 
 # 5. Optional Tweaks
 
@@ -266,3 +268,9 @@ These tweaks are optional, but can be useful.
 ## Mounting root as read/write on boot
 By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
+
+## Removing software update notifications
+
+`sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup`
+
+If you aren't on the latest version of macOS and hate seeing the little notification that pops up every day or so telling you to update to the newest version, this patch should fix that.
