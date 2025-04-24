@@ -108,7 +108,7 @@ We will now need to boot into 1 True Recovery (1TR). To enter 1TR shut down your
 
 Once you are in startup options menu select "Options" with the settings icon. Type your password to authenticate then open terminal by pressing "Utilities" at the top of the menu bar.
 
-We will need to disable System Integrity Protection and the Secure System Volume. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
+We will need to disable System Integrity Protection, the Secured System Volume, and Gatekeeper. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
 
 Disable SIP:
 
@@ -126,9 +126,17 @@ Reboot the system:
 
 `reboot`
 
-We will need to add boot arguments now to further relax system restrictions. Run these commands (The `-v` is optional, all it does is enable verbose booting):
+We need to add boot arguments to further relax system restrictions, along with disable Gatekeeper. Run these commands (The `-v` is optional, all it does is enable verbose booting):
 
 `sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"`
+
+Disable Gatekeeper on macOS 14 and below:
+
+`sudo spctl --master-disable`
+
+In macOS 15 and above, Apple made it harder to disable Gatekeeper. The command above no longer works so we will need to use a configuration profile to disable it instead. Follow the guide below on how to disable it on macOS 15.
+
+[Disable-Gatekeeper](https://github.com/chris1111/Disable-Gatekeeper)
 
 `reboot`
 
