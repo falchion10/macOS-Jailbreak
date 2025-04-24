@@ -259,9 +259,15 @@ Put both of them in: `/Library/TweakInject`
 
 Add macosx to the CydiaSubstrate, otherwise it wont link
 
-Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps.
+Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps. Place the script in `/usr/local/bin`
 
+Add this to your .zshrc
 
+`alias sign="sudo /usr/local/bin/adhoc_app.sh"`
+
+Now in terminal whenever you need to resign an app just type:
+
+`sign /Applications/App.app`
 
 # 5. Optional Tweaks
 
