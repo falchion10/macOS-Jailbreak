@@ -287,10 +287,13 @@ By default the root filesystem is not mounted as r/w when starting macOS. This c
 
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
 
-Run these two commands after moving the file.
+Run these two commands after moving the file, then reboot.
 
 `sudo chmod 644 /Library/LaunchDaemons/com.nathan.mount.plist`
+
 `sudo chown root:wheel /Library/LaunchDaemons/com.nathan.mount.plist`
+
+`reboot`
 
 ## Removing software update notifications
 
