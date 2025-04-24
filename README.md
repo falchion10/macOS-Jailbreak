@@ -5,6 +5,10 @@ Tested on macOS 14 and macOS 15
 
 This guide is very technical and will take some time to complete on the first attempt. If you aren't comfortable disabling System Integrity Protection (SIP) or the Secured System Volume (SSV) please do not continue with the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of ellekit.
 
+## Preliminary Note about updates
+
+You can still update macOS after following this guide, HOWEVER, when attempting to update re-enable SIP in 1 True Recovery. This will erase all rootfs changes, custom kernel changes, and dyld changes. This is REQUIRED to update, if you do not do this beforehand your system will bootloop after the update has been applied, this can be fixed though by re-enabling SIP. After an update you will need to redo the entire guide. I'm not sure how Rapid Security Releases (RSRs) react to these changes, it can be assumed that they would either fail or cause issues. Apple hasn't pushed any RSRs in the past two years though so it can be assumed that RSRs are dead (The last RSR that was pushed was for macOS 13.3.1).
+
 I am not responsible for any damage caused by following these instructions. Please make sure you have a backup of your data beforehand as things could go wrong.
 Let us begin!
 
@@ -71,13 +75,12 @@ Open our ready to patch kernelcache in Radare2:
 
 `r2 -w kcache.patched`
 
-Find this pattern in Radare2:
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
 
         /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
 
-Source for trustcache patch:
-https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c
+[Source](https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c) for trustcache patch
+
 
 We need to write new instructions in Radare2, to do this type "v" to enter visual mode, then type "g" and paste in the address you found earlier. 
 When you are at the address use "j" and "j" to scroll up and down respectively. 
