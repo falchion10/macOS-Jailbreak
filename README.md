@@ -269,10 +269,19 @@ These tweaks are optional, but can be useful.
 By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
 
-## Installing [TCCPLus](https://github.com/jslegendre/tccplus) to manage application permissions
+## Removing software update notifications
+
+`sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup`
+
+If you aren't on the latest version of macOS and hate seeing the little notification that pops up every day or so telling you to update to the newest version, this patch should fix that.
+
+
+## Installing [TCCPlus](https://github.com/jslegendre/tccplus) to manage application permissions
 
 By default, whenever you disable SIP applications can no longer request permissions for things such as the microphone, camera, etc. We can use tccplus to manually grant apps permissions.
 Compile tccplus from source, or use the given binary and place it in `/usr/local/bin`. Read the docs on how it works. I have created two shell scripts that allow you to easily grant permissions to apps by just dragging the app's .app file in /Applications. Add these two scripts to your `.zshrc`.
+
+Run `tccadd [SERVICE] /Applications/App.app`
 
         tccadd() {
           if [[ -z "$1" ]]; then
@@ -312,7 +321,7 @@ Compile tccplus from source, or use the given binary and place it in `/usr/local
           tccplus add "$service" "$bundle_id"
         }
 
-
+Run `tccrem [SERVICE] /Applications/App.app`
 
         tccrem() {
           if [[ -z "$1" ]]; then
@@ -352,8 +361,3 @@ Compile tccplus from source, or use the given binary and place it in `/usr/local
           tccplus reset "$service" "$bundle_id"
         }
 
-## Removing software update notifications
-
-`sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup`
-
-If you aren't on the latest version of macOS and hate seeing the little notification that pops up every day or so telling you to update to the newest version, this patch should fix that.
