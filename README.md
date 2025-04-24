@@ -312,6 +312,8 @@ Compile tccplus from source, or use the given binary and place it in `/usr/local
           tccplus add "$service" "$bundle_id"
         }
 
+
+
         tccrem() {
           if [[ -z "$1" ]]; then
             echo "Usage: tccremove [Service] /path/to/AppName.app"
