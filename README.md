@@ -96,7 +96,8 @@ Press "return" to save the changes and press "q" to exit assembler mode, then pr
 
 ## 1c. Read/Write RootFS Patch
 
-Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin
+Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin.
+
 Use KPlooshFinder on our patched kernel to apply the second patch.
 
 `KPlooshFinder kcache.patched kcache.readwrite`
