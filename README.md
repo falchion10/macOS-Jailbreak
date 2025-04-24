@@ -218,7 +218,7 @@ There should be a tar.gz file in the packages folder inside the repo. Rename the
 
 `sudo tar -xvf ellekit.tar.gz -C /`
 
-Resign the loader with loader.xml:
+Resign the loader with `loader.xml`:
 
 `ldid -Sloader.xml /usr/local/bin/loader`
 
