@@ -126,7 +126,7 @@ Reboot the system:
 
 `reboot`
 
-We need to add boot arguments to further relax system restrictions, along with disable Gatekeeper. Run these commands (The `-v` is optional, all it does is enable verbose booting):
+We need to add boot arguments to further relax system restrictions, along with disable Gatekeeper. Run these commands (the `-v` is optional, all it does is enable verbose booting):
 
 `sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"`
 
@@ -158,13 +158,13 @@ Copy dyld into our workspace and create a backup:
 
 The patches for dyld are:
 
-[Dopamine's Patch](https://github.com/opa334/Dopamine/blob/2.x/BaseBin/jbctl/src/dyldpatch.m#L11-L22)
+[Dopamine's Patch](https://github.com/opa334/Dopamine/blob/2.x/BaseBin/libjailbreak/src/basebin_gen.m#L7)
 
 [Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51)
 
 ## 2a. Dopamine's Patch
 
-Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (If you can't find the symbol, try searching for the demangled one):
+Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (if you can't find the symbol, try searching for the demangled one):
 
         mov x0, 0xdf; ret
 
@@ -224,7 +224,7 @@ Install Ellekit by compiling it from source. Type these commands to clone Elleki
 
 `MAC=1 make`
 
-There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (You'll get an error about timestamps, ignore it):
+There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (you'll get an error about timestamps, ignore it):
 
 `sudo tar -xvf ellekit.tar.gz -C /`
 
@@ -262,11 +262,9 @@ To setup Theos for macOS you need to move this directory, move it back after you
 
 `mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit`
 
-You'll need to compile appsync for macOS, you only need the installd dylib and the plist included with it
+You'll need to compile appsync for macOS (add macosx to the CydiaSubstrate, otherwise it wont link). You only need the installd dylib and the plist included with it
 
 Put both of them in: `/Library/TweakInject`
-
-Add macosx to the CydiaSubstrate, otherwise it wont link
 
 Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps. Place the script in `/usr/local/bin`
 
@@ -302,7 +300,7 @@ Run these two commands after moving the file, then reboot.
 If you aren't on the latest version of macOS and hate seeing the little notification that pops up every day or so telling you to update to the newest version, this patch should fix that.
 
 
-## Installing [TCCPlus](https://github.com/jslegendre/tccplus) to manage application permissions
+## Installing [tccplus](https://github.com/jslegendre/tccplus) to manage application permissions
 
 By default, whenever you disable SIP applications can no longer request permissions for things such as the microphone, camera, etc. We can use tccplus to manually grant apps permissions.
 Compile tccplus from source, or use the given binary and place it in `/usr/local/bin`. Read the docs on how it works. I have created two shell scripts that allow you to easily grant permissions to apps by just dragging the app's .app file in /Applications. Add these two scripts to your `.zshrc`.
