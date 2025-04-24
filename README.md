@@ -269,6 +269,87 @@ These tweaks are optional, but can be useful.
 By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
 
+## Installing [TCCPLus](https://github.com/jslegendre/tccplus) to manage application permissions
+
+By default, whenever you disable SIP applications can no longer request permissions for things such as the microphone, camera, etc. We can use tccplus to manually grant apps permissions.
+Compile tccplus from source, or use the given binary and place it in `/usr/local/bin`. Read the docs on how it works. I have created two shell scripts that allow you to easily grant permissions to apps by just dragging the app's .app file in /Applications. Add these two scripts to your `.zshrc`.
+
+        tccadd() {
+          if [[ -z "$1" ]]; then
+            echo "Usage: tccadd [Service] /path/to/AppName.app"
+            return 1
+          fi
+
+          local service="$1"
+          shift
+
+          if [[ -z "$1" ]]; then
+            echo "Now drag the .app file here and press Enter."
+            read app_path
+          else
+            app_path="$1"
+          fi
+
+          # Clean up possible quotes from drag-and-drop
+          app_path="${app_path%\"}"
+          app_path="${app_path#\"}"
+
+          if [[ ! -d "$app_path" || "${app_path##*.}" != "app" ]]; then
+            echo "Error: '$app_path' is not a valid .app bundle"
+            return 1
+          fi
+
+          local plist="$app_path/Contents/Info.plist"
+          if [[ ! -f "$plist" ]]; then
+            echo "Error: Info.plist not found in '$app_path'"
+            return 1
+          fi
+
+          local bundle_id
+          bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$plist")
+
+          echo "Granting $service access to $bundle_id..."
+          tccplus add "$service" "$bundle_id"
+        }
+
+        tccrem() {
+          if [[ -z "$1" ]]; then
+            echo "Usage: tccremove [Service] /path/to/AppName.app"
+            return 1
+          fi
+
+          local service="$1"
+          shift
+
+          if [[ -z "$1" ]]; then
+            echo "Now drag the .app file here and press Enter."
+            read app_path
+          else
+            app_path="$1"
+          fi
+
+          # Clean up possible quotes from drag-and-drop
+          app_path="${app_path%"}"
+          app_path="${app_path#"}"
+
+          if [[ ! -d "$app_path" || "${app_path##*.}" != "app" ]]; then
+            echo "Error: '$app_path' is not a valid .app bundle"
+            return 1
+          fi
+
+          local plist="$app_path/Contents/Info.plist"
+          if [[ ! -f "$plist" ]]; then
+            echo "Error: Info.plist not found in '$app_path'"
+            return 1
+          fi
+
+          local bundle_id
+          bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$plist")
+
+          echo "Removing $service access from $bundle_id..."
+          tccplus reset "$service" "$bundle_id"
+        }
+
 ## Removing software update notifications
 
 `sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup`
