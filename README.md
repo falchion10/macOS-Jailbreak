@@ -224,19 +224,19 @@ Run these two commands to mount the root filesystem as read/write, and to create
 
 ## 2c. Installing Procursus
 
-You'll need to install ldid from the Procursus repo, follow these steps to do so.
+You'll need to install ldid from the procursus repo, follow these steps to do so.
 
 First install zstd from homebrew:
 
 `brew install zstd`
 
-Then download the Procursus bootstrap:
+Then download the procursus bootstrap:
 
 ```
 curl -L https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-arm64.tar.zst -o bootstrap.tar.zst
 ```
 
-Run these commands to install Procursus:
+Run these commands to install procursus, along with ldid:
 
 ```
 zstd -d bootstrap.tar.zst
@@ -264,7 +264,11 @@ sudo apt update
 sudo apt full-upgrade
 ```
 
-Now that you have Procursus installed you will need to use ldid on dyld:
+```
+sudo apt install ldid
+```
+
+Now that you have procursus installed you will need to use ldid on dyld:
 
 `ldid -S dyld -Icom.apple.darwin.ignition`
 
