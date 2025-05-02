@@ -245,8 +245,10 @@ mov x0, 0xdf; ret
 
 ## 2b. Palera1n's DYLD_IN_CACHE Patch
 
-Search DYLD_IN_CACHE
+Search DYLD_IN_CACHE (Find Type: Text (Disassembly)
+
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
+
 Find this pattern:
 
 ```asm
