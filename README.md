@@ -1,7 +1,7 @@
 ## macOS-Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
-Tested on macOS 14.7.1, 15.3, 15.3.1, and 15.3.2. It should work on any macOS 14 or 15 version.
+Tested on macOS 14.7.1, 15.3, 15.3.1, and 15.3.2. It should work on any macOS 14 or 15 version. This should also work on macOS 13, you milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions 
 
 This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) please do not continue with the guide. Disabling SIP will make it so you can't install any iOS/iPadOS apps from the App Store, but this isn't an issue as any app will be sideloadable after the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
