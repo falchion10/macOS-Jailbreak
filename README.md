@@ -93,7 +93,7 @@ Save the address for this instruction "q" to quit out of assembler mode, you sho
 Type "g" and go to the address of the `pacibsp` instruction, then type "a" to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
-```
+```asm
 mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
 ```
 
@@ -171,17 +171,19 @@ The patches for dyld are:
 
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (if you can't find the symbol, try searching for the demangled one):
 
-        mov x0, 0xdf; ret
+```asm
+mov x0, 0xdf; ret
+```
 
 Dopamine Symbol:
 
-```
+```cpp
 __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
 ```
 
 Demangled Symbol:
 
-```
+```cpp
 _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 ```
 
@@ -206,7 +208,7 @@ Find this pattern:
 
 Replace the pattern with:
 
-```
+```asm
 stream[5] = 0xd503201f; /* nop */
 stream[8] = 0x52800000; /* mov w0, #0 */
 ```
@@ -320,7 +322,7 @@ Compile tccplus from source, or use the given binary and place it in `/usr/local
 
 Run `tccadd [SERVICE] /Applications/App.app`
 
-```
+```bash
 tccadd() {
   if [[ -z "$1" ]]; then
     echo "Usage: tccadd [Service] /path/to/AppName.app"
@@ -362,7 +364,7 @@ tccadd() {
 
 Run `tccrem [SERVICE] /Applications/App.app`
 
-```
+```bash
 tccrem() {
   if [[ -z "$1" ]]; then
     echo "Usage: tccremove [Service] /path/to/AppName.app"
