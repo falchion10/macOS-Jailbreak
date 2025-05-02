@@ -16,7 +16,7 @@ Let us begin!
 # 1. Kernel Patches
 
 
-## 1a. Compiling & Using img4
+## 1a. Compiling & Using [img4](https://github.com/xerub/img4lib)
 
 First, we will need to do two kernel patches, a trustcache patch, along with a file system read/write patch.
 
@@ -230,7 +230,7 @@ Type this command to replace dyld, this will cause every process on your system 
 
 `sudo cp -v dyld /usr/lib/dyld`
 
-# 3. Installing Ellekit
+# 3. Installing [Ellekit](https://github.com/tealbathingsuit/ellekit)
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync.
 
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
@@ -269,7 +269,7 @@ Make a CydiaSubstrate symlink for easy tweak injection:
 
 `sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate`
 
-# 4. Installing AppSync
+# 4. Installing [AppSync](https://github.com/akemin-dayo/AppSync)
  
 To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync
 
