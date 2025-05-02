@@ -22,59 +22,87 @@ First, we will need to do two kernel patches, a trustcache patch, along with a f
 
 You'll need to compile img4lib from source on your Mac machine as there are no currently available arm64 binaries:
 
-`git clone --recursive https://github.com/xerub/img4lib.git`
+```
+git clone --recursive https://github.com/xerub/img4lib.git
+```
 
 Install lzfse and openssl from homebrew:
 
-`brew install lzfse openssl@3`
+```
+brew install lzfse openssl@3
+```
 
 Edit the Makefile for img4lib:
 
-`nano Makefile`
+```
+nano Makefile
+```
 
 Add a CFLAGS line:
 
-`CFLAGS += -I/opt/homebrew/include`
+```
+CFLAGS += -I/opt/homebrew/include
+```
 
 And an LDFLAGS line:
 
-`LDFLAGS += -L/opt/homebrew/lib`
+```
+LDFLAGS += -L/opt/homebrew/lib
+```
 
 Compile the project:
 
-`make`
+```
+make
+```
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory:
 
-`mkdir -p ~/Jailbreak`
+```
+mkdir -p ~/Jailbreak
+```
 
-`cd ~/Jailbreak mkdir KPatch`
+```
+cd ~/Jailbreak mkdir KPatch
+```
 
-`cd KPatch`
+```
+cd KPatch
+```
 
 To begin with the kernel modifications we will need to use img4 on our current kernelcache:
 
-`img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw`
+```
+img4 -i /System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcaches/kernelcache -o kcache.raw
+```
 
 I recommend creating a copy of your original kernelcache just in case any modifications go wrong:
 
-`cp -v kcache.raw kcache.raw.backup`
+```
+cp -v kcache.raw kcache.raw.backup
+```
 
 Copy the extracted kernelcache to new file, allowing us to create a patched version:
 
-`cp -v kcache.raw kcache.patched`
+```
+cp -v kcache.raw kcache.patched
+```
 
 ## 1b. Trustcache Patch
 
 We will be using Radare2, a reverse engineering tool, for the first patch, install it using homebrew:
 
-`brew install radare2`
+```
+brew install radare2
+```
 
 Open our ready to patch kernelcache in Radare2:
 
-`r2 -w kcache.patched`
+```
+r2 -w kcache.patched
+```
 
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe:
 
@@ -105,7 +133,9 @@ Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply thi
 
 Use KPlooshFinder on our patched kernel to apply the second patch:
 
-`KPlooshFinder kcache.patched kcache.readwrite`
+```
+KPlooshFinder kcache.patched kcache.readwrite
+```
 
 ## 1d. Reducing Security & Installing the Kernel
 
@@ -117,49 +147,73 @@ We will need to disable System Integrity Protection, the Secured System Volume, 
 
 Disable SIP:
 
-`csrutil disable`
+```
+csrutil disable
+```
 
 Disable SSV:
 
-`csrutil authenticated-root disable`
+```
+csrutil authenticated-root disable
+```
 
 Install Kernel:
 
-`kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[username]/Jailbreak/KPatch/kcache.readwrite`
+```
+kmutil configure-boot -v /Volumes/Macintosh\ HD -c /Volumes/Data/Users/[username]/Jailbreak/KPatch/kcache.readwrite
+```
 
 Reboot the system:
 
-`reboot`
+```
+reboot
+```
 
 We need to add boot arguments to further relax system restrictions, along with disable Gatekeeper. Run these commands (the `-v` is optional, all it does is enable verbose booting):
 
-`sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"`
+```
+sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"
+```
 
 Disable Gatekeeper on macOS 14 and below:
 
-`sudo spctl --master-disable`
+```
+sudo spctl --master-disable
+```
 
 In macOS 15 and above, Apple made it harder to disable Gatekeeper. The command above no longer works so we will need to use a configuration profile to disable it instead. Follow the guide below on how to disable it on macOS 15.
 
 [Disable-Gatekeeper](https://github.com/chris1111/Disable-Gatekeeper)
 
-`reboot`
+```
+reboot
+```
 
 # 2. Dyld Patches
 
 We will now begin patching dyld. I'm going to stay organized and keep these files in a different directory:
 
-`cd ~/Jailbreak`
+```
+cd ~/Jailbreak
+```
 
-`mkdir DPatch`
+```
+mkdir DPatch
+```
 
-`cd DPatch`
+```
+cd DPatch
+```
 
 Copy dyld into our workspace and create a backup:
 
-`cp -v /usr/lib/dyld ./dyld`
+```
+cp -v /usr/lib/dyld ./dyld
+```
         
-`cp -v dyld dyld.backup`
+```
+cp -v dyld dyld.backup
+```
 
 The patches for dyld are:
 
@@ -218,9 +272,13 @@ Save changes with cmd+s
 
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
 
-`sudo mount -uw /`
+```
+sudo mount -uw /
+```
 
-`sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
+```
+sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
+```
 
 ## 2c. Installing Procursus
 
@@ -272,58 +330,88 @@ sudo apt install ldid
 
 Now that you have procursus installed you will need to use ldid on dyld:
 
-`ldid -S dyld -Icom.apple.darwin.ignition`
+```
+ldid -S dyld -Icom.apple.darwin.ignition
+```
 
 Type this command to replace dyld, this will cause every process on your system to be killed. Force restart by holding the power button:
 
-`sudo cp -v dyld /usr/lib/dyld`
+```
+sudo cp -v dyld /usr/lib/dyld
+```
 
 # 3. Installing [Ellekit](https://github.com/tealbathingsuit/ellekit)
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync.
 
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS:
 
-`git clone https://github.com/tealbathingsuit/ellekit`
+```
+git clone https://github.com/tealbathingsuit/ellekit
+```
 
-`MAC=1 make`
+```
+MAC=1 make
+```
 
 There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (you'll get an error about timestamps, ignore it):
 
-`sudo tar -xvf ellekit.tar.gz -C /`
+```
+sudo tar -xvf ellekit.tar.gz -C /
+```
 
 Resign the loader with `loader.xml`:
 
-`ldid -Sloader.xml /usr/local/bin/loader`
+```
+ldid -Sloader.xml /usr/local/bin/loader
+```
 
 Copy the loader to /Library/TweakInject/loader:
 
-`sudo cp -v /usr/local/bin/loader /Library/TweakInject/loader`
+```
+sudo cp -v /usr/local/bin/loader /Library/TweakInject/loader
+```
 
 Place the launch daemon from com.evln.ellekit.startup.plist to /Library/LaunchDaemons:
 
-`sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+```
+sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist
+```
 
 Set the correct permissions & reboot:
 
-`sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+```
+sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist
+```
 
-`sudo chown root:wheel /Library/LaunchDaemons/com.evln.ellekit.startup.plist`
+```
+sudo chown root:wheel /Library/LaunchDaemons/com.evln.ellekit.startup.plist
+```
 
-`reboot`
+```
+reboot
+```
 
 Make a CydiaSubstrate symlink for easy tweak injection:
 
-`sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework`
+```
+sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
+```
 
-`sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate`
+```
+sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate
+```
 
 # 4. Installing [AppSync](https://github.com/akemin-dayo/AppSync)
  
 To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync:
 
-`mv ~/theos/vendor/include/IOKit ~/theos/vendor/include/IOKit.bak`
+```
+mv ~/theos/vendor/include/IOKit ~/theos/vendor/include/IOKit.bak
+```
 
-`mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit`
+```
+mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit
+```
 
 You'll need to compile appsync for macOS (add macosx to the CydiaSubstrate, otherwise it wont link). You only need the installd dylib and the plist included with it
 
@@ -333,7 +421,9 @@ Reboot once more and you should now have a jailbroken Mac machine. Double click 
 
 Add this to your .zshrc:
 
-`alias sign="sudo /usr/local/bin/adhoc_app.sh"`
+```
+echo 'alias sign="sudo /usr/local/bin/adhoc_app.sh"' >> ~/.zshrc
+```
 
 Now in terminal whenever you need to resign an app just type:
 
@@ -350,11 +440,17 @@ Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to autom
 
 Run these two commands after moving the file, then reboot:
 
-`sudo chmod 644 /Library/LaunchDaemons/com.nathan.mount.plist`
+```
+sudo chmod 644 /Library/LaunchDaemons/com.nathan.mount.plist
+```
 
-`sudo chown root:wheel /Library/LaunchDaemons/com.nathan.mount.plist`
+```
+sudo chown root:wheel /Library/LaunchDaemons/com.nathan.mount.plist
+```
 
-`reboot`
+```
+reboot
+```
 
 ## Removing software update notifications
 
