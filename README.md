@@ -228,7 +228,9 @@ You'll need to install ldid from the procursus repo, follow these steps to do so
 
 First install zstd from homebrew:
 
-`brew install zstd`
+```
+brew install zstd
+```
 
 Then download the procursus bootstrap:
 
