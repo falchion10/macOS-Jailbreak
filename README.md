@@ -78,7 +78,7 @@ Open our ready to patch kernelcache in Radare2:
 
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
 
-```arm64
+```
 /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
 ```
 
@@ -191,7 +191,7 @@ Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 Find this pattern:
 
-```
+```arm64
 0xaa1303e0, // mov x0, x19
 0x94000000, // bl dyld4::KernelArgs::findEnvp
 0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
