@@ -225,10 +225,6 @@ The patches for dyld are:
 
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (if you can't find the symbol, try searching for the demangled one):
 
-```asm
-mov x0, 0xdf; ret
-```
-
 Dopamine Symbol:
 
 ```cpp
@@ -239,6 +235,12 @@ Demangled Symbol:
 
 ```cpp
 _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
+```
+
+After finding the symbol right click it, select "Patch", then "Assemble" and then paste in this code and press return:
+
+```asm
+mov x0, 0xdf; ret
 ```
 
 ## 2b. Palera1n's DYLD_IN_CACHE Patch
