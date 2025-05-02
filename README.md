@@ -15,7 +15,6 @@ Let us begin!
 
 # 1. Kernel Patches
 
-
 ## 1a. Compiling [img4](https://github.com/xerub/img4lib)
 
 First, we will need to do two kernel patches, a trustcache patch, along with a file system read/write patch.
@@ -350,6 +349,7 @@ sudo cp -v dyld /usr/lib/dyld
 ```
 
 # 3. Installing [Ellekit](https://github.com/tealbathingsuit/ellekit)
+
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync.
 
 Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS:
@@ -410,8 +410,10 @@ sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
 sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate
 ```
 
-# 4. Installing [AppSync](https://github.com/akemin-dayo/AppSync)
- 
+# 4. Compiling & Installing [AppSync](https://github.com/akemin-dayo/AppSync)
+
+## 4a. Compiling AppSync
+
 To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync:
 
 ```
@@ -424,11 +426,17 @@ mv ~/theos/vendor/include/IOKit.bak ~/theos/vendor/include/IOKit
 
 You'll need to compile appsync for macOS (add macosx to the CydiaSubstrate, otherwise it wont link). You only need the installd dylib and the plist included with it
 
-Put both of them in: `/Library/TweakInject`
+## 4b. Installing AppSync
 
-Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps. Place the script in `/usr/local/bin`
+Move `AppSyncUnified-installd.dylib` and `AppSyncUnified-installd.plist` to `/Library/TweakInject`
 
-Run this command to add an alias to your .zshrc file for the .sh script:
+```
+reboot
+```
+
+After the reboot you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use `adhoc_app.sh` to resign apps. Place `adhoc_app.sh` in `/usr/local/bin`
+
+Run this command to add an alias to your .zshrc file for `adhoc_app.sh`:
 
 ```
 echo 'alias sign="sudo /usr/local/bin/adhoc_app.sh"' >> ~/.zshrc
@@ -443,6 +451,7 @@ Now in terminal whenever you need to resign an app just type:
 These tweaks are optional, but can be useful. 
 
 ## Mounting root as read/write on boot
+
 By default the root filesystem is not mounted as r/w when starting macOS. This can be an issue if you frequently work within protected folders.
 
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
