@@ -250,16 +250,18 @@ Then go to the xref (Cross references, should be located at the bottom left of B
 Find this pattern:
 
 ```asm
-0xaa1303e0, // mov x0, x19
-0x94000000, // bl dyld4::KernelArgs::findEnvp
-0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
-0x91000021, // add x1, "DYLD_IN_CACHE"@PAGEOFF
-0x94000000, // bl __simple_getenv
-0xb4000000, // cbz x0, ...
-0x90000001, // adrp x1, "0"@PAGE
-0x91000021, // add x1, "0"@PAGEOFF
-0x94000000, // bl strcmp
-0x34000000  // cbz w0, ...
+00005ee4  e00316aa   mov     x0, x22
+00005ee8  7a0c0094   bl      dyld4::KernelArgs::findEnvp
+00005eec  610300d0   adrp    x1, 0x73000
+00005ef0  212c0091   add     x1, x1, #0xb  {data_7300b, "DYLD_IN_CACHE"}
+00005ef4  a1fbff97   bl      __simple_getenv
+00005ef8  a00000b4   cbz     x0, 0x5f0c
+
+00005efc  610300d0   adrp    x1, 0x73000
+00005f00  21640091   add     x1, x1, #0x19  {data_73019}
+00005f04  a3f2ff97   bl      __platform_strcmp
+00005f08  a0010034   cbz     w0, 0x5f3c
+
 ```
 
 Replace the pattern with:
