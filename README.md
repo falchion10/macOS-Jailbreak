@@ -191,7 +191,7 @@ Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 Find this pattern:
 
-```arm64
+```asm
 0xaa1303e0, // mov x0, x19
 0x94000000, // bl dyld4::KernelArgs::findEnvp
 0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
