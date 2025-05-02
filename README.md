@@ -22,19 +22,19 @@ First, we will need to do two kernel patches, a trustcache patch, along with a f
 
 You'll need to compile img4lib from source on your Mac machine as there are no currently available arm64 binaries:
 
-```zsh
+```sh
 git clone --recursive https://github.com/xerub/img4lib.git
 ```
 
 Install lzfse and openssl from homebrew:
 
-```zsh
+```bash
 brew install lzfse openssl@3
 ```
 
 Edit the Makefile for img4lib:
 
-```zsh
+```shell
 nano Makefile
 ```
 
