@@ -537,7 +537,7 @@ Run `tccrem [SERVICE] /Applications/App.app`
 ```zsh
 tccrem() {
   if [[ -z "$1" ]]; then
-    echo "Usage: tccremove [Service] /path/to/AppName.app"
+    echo "Usage: tccrem [Service] /path/to/AppName.app"
     return 1
   fi
     
