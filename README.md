@@ -1,15 +1,16 @@
 ## macOS-Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
-Tested on macOS 14 and macOS 15
+Tested on macOS 14.7.1, 15.3, 15.3.1, and 15.3.2. It should work on any macOS 14 or 15 version.
 
-This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) or the Secured System Volume (SSV) please do not continue with the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
+This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) please do not continue with the guide. Disabling SIP will make it so you can't install any iOS/iPadOS apps from the App Store, but this isn't an issue as any app will be sideloadable after the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
 ## Preliminary Note about updates
 
 You can still update macOS after following this guide, HOWEVER, when attempting to update re-enable SIP in 1 True Recovery. This will erase all rootfs changes, custom kernel changes, and dyld changes. This is REQUIRED to update, if you do not do this beforehand your system will bootloop after the update has been applied, this can be fixed though by re-enabling SIP. After an update you will need to redo the kernel and dyld patches, Ellekit and AppSync will still be installed, however will not be functional. I'm not sure how Rapid Security Releases (RSRs) react to these changes, it can be assumed that they would either fail or cause issues. Apple hasn't pushed any RSRs in the past two years though so it can be assumed that RSRs are dead (the last RSR that was pushed was for macOS 13.3.1).
 
 I am not responsible for any damage caused by following these instructions. Please make sure you have a backup of your data beforehand as things could go wrong.
+
 Let us begin!
 
 # 1. Kernel Patches
@@ -77,20 +78,24 @@ Open our ready to patch kernelcache in Radare2:
 
 When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
 
-        /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
+```
+/x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
+```
 
 [Source](https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c) for the trustcache patch
 
 
-We need to write new instructions in Radare2, to do this type "v" to enter visual mode, then type "g" and paste in the address you found earlier. 
+We need to write new instructions in Radare2, to do this type "V" to enter visual mode, then type "g" and paste in the address you found earlier. 
 When you are at the address use "j" and "k" to scroll up and down respectively. 
-We will need to scroll up a few lines. Once you've scrolled up type "a" to enter the assembler mode. 
+We will need to scroll up a few lines. Once you've scrolled up type "A" to enter the assembler mode. 
 You're going to want to find the `AMFIIsCDHashInTrustCache` function, below this function you should see an instruction named `pacibsp`. 
 Save the address for this instruction "q" to quit out of assembler mode, you should be back in visual mode. 
 Type "g" and go to the address of the `pacibsp` instruction, then type "a" to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
-        mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
+```
+mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
+```
 
 Press "return" to save the changes and press "q" to exit assembler mode, then press "q" and "return" again to exit Radare2.
 
@@ -170,11 +175,15 @@ Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the 
 
 Dopamine Symbol:
 
-        __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
+```
+__ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
+```
 
 Demangled Symbol:
 
-        _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
+```
+_dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
+```
 
 ## 2b. Palera1n's DYLD_IN_CACHE Patch
 
@@ -182,22 +191,26 @@ Search DYLD_IN_CACHE
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 Find this pattern:
 
-        0xaa1303e0, // mov x0, x19
-        0x94000000, // bl dyld4::KernelArgs::findEnvp
-        0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
-        0x91000021, // add x1, "DYLD_IN_CACHE"@PAGEOFF
-        0x94000000, // bl __simple_getenv
-        0xb4000000, // cbz x0, ...
-        0x90000001, // adrp x1, "0"@PAGE
-        0x91000021, // add x1, "0"@PAGEOFF
-        0x94000000, // bl strcmp
-        0x34000000  // cbz w0, ...
+```
+0xaa1303e0, // mov x0, x19
+0x94000000, // bl dyld4::KernelArgs::findEnvp
+0x90000001, // adrp x1, "DYLD_IN_CACHE"@PAGE
+0x91000021, // add x1, "DYLD_IN_CACHE"@PAGEOFF
+0x94000000, // bl __simple_getenv
+0xb4000000, // cbz x0, ...
+0x90000001, // adrp x1, "0"@PAGE
+0x91000021, // add x1, "0"@PAGEOFF
+0x94000000, // bl strcmp
+0x34000000  // cbz w0, ...
+```
 
 Replace the pattern with:
 
-        stream[5] = 0xd503201f; /* nop */
-        stream[8] = 0x52800000; /* mov w0, #0 */
-        
+```
+stream[5] = 0xd503201f; /* nop */
+stream[8] = 0x52800000; /* mov w0, #0 */
+```
+
 This will make it so it never gets called.
 Save changes with cmd+s
 
