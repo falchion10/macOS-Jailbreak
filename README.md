@@ -322,7 +322,7 @@ Compile tccplus from source, or use the given binary and place it in `/usr/local
 
 Run `tccadd [SERVICE] /Applications/App.app`
 
-```bash
+```zsh
 tccadd() {
   if [[ -z "$1" ]]; then
     echo "Usage: tccadd [Service] /path/to/AppName.app"
@@ -364,7 +364,7 @@ tccadd() {
 
 Run `tccrem [SERVICE] /Applications/App.app`
 
-```bash
+```zsh
 tccrem() {
   if [[ -z "$1" ]]; then
     echo "Usage: tccremove [Service] /path/to/AppName.app"
