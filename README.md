@@ -273,8 +273,9 @@ stream[5] = 0xd503201f; /* nop */
 stream[8] = 0x52800000; /* mov w0, #0 */
 ```
 
-This will make it so it never gets called.
-Save changes with cmd+s
+What thiis is doing is changing the 6th and 9th line in that sequence of assembly to `nop` and `mov w0, #0` respectively. 
+
+This will make it so it never gets called. Save changes with cmd+s
 
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
 
