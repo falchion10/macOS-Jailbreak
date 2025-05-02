@@ -280,7 +280,7 @@ sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
 ```
 
-## 2c. Installing Procursus
+## 2c. Installing Procursus & Using ldid
 
 You'll need to install ldid from the procursus repo, follow these steps to do so.
 
