@@ -76,7 +76,7 @@ Open our ready to patch kernelcache in Radare2:
 
 `r2 -w kcache.patched`
 
-When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe.
+When Radare2 is finished initializing all the kexts, type in this command to find the location for our patch, you should get one result. Copy this address and keep it safe:
 
 ```
 /x e0030091e10313aa000000949f020071e0179f1a:ffffffffffffffff000000fcffffffffffffffff
@@ -103,7 +103,7 @@ Press "return" to save the changes and press "q" to exit assembler mode, then pr
 
 Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin.
 
-Use KPlooshFinder on our patched kernel to apply the second patch.
+Use KPlooshFinder on our patched kernel to apply the second patch:
 
 `KPlooshFinder kcache.patched kcache.readwrite`
 
@@ -147,7 +147,7 @@ In macOS 15 and above, Apple made it harder to disable Gatekeeper. The command a
 
 # 2. Dyld Patches
 
-We will now begin patching dyld. I'm going to stay organized and keep these files in a different directory
+We will now begin patching dyld. I'm going to stay organized and keep these files in a different directory:
 
 `cd ~/Jailbreak`
 
@@ -216,24 +216,54 @@ stream[8] = 0x52800000; /* mov w0, #0 */
 This will make it so it never gets called.
 Save changes with cmd+s
 
-Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld.
+Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
 
 `sudo mount -uw /`
 
 `sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup`
 
-You will need to use ldid on dyld, you can get ldid from Procursus. There's a guide on how to get Procursus installed on the [Procursus Discord](https://discord.gg/HA9N9FQhRu).
+## 2c. Installing Procursus
+
+You'll need to install ldid from the Procursus repo, follow these steps to do so.
+
+First install zstd from homebrew:
+
+`brew install zstd`
+
+Then download the Procursus bootstrap:
+
+```curl -L https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-arm64.tar.zst -o bootstrap.tar.zst```
+
+Run these commands to install Procursus:
+
+```zstd -d bootstrap.tar.zst```
+
+```sudo tar -xpkf bootstrap.tar -C /```
+
+```
+echo 'PATH="/opt/procursus/bin:/opt/procursus/sbin:/opt/procursus/games:$PATH"
+CPATH="$CPATH:/opt/procursus/include"
+LIBRARY_PATH="$LIBRARY_PATH:/opt/procursus/lib"' >> ~/.zshrc
+```
+
+```source ~/.zshrc```
+
+```sudo apt update```
+
+```sudo apt full-upgrade```
+
+Now that you have Procursus installed you will need to use ldid on dyld:
 
 `ldid -S dyld -Icom.apple.darwin.ignition`
 
-Type this command to replace dyld, this will cause every process on your system to be killed. Force restart by holding the power button.
+Type this command to replace dyld, this will cause every process on your system to be killed. Force restart by holding the power button:
 
 `sudo cp -v dyld /usr/lib/dyld`
 
 # 3. Installing [Ellekit](https://github.com/tealbathingsuit/ellekit)
 Ellekit is the tweak injection platform we will be using for certain tweaks, such as AppSync.
 
-Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS.
+Install Ellekit by compiling it from source. Type these commands to clone Ellekit's repo, make it for macOS:
 
 `git clone https://github.com/tealbathingsuit/ellekit`
 
@@ -271,7 +301,7 @@ Make a CydiaSubstrate symlink for easy tweak injection:
 
 # 4. Installing [AppSync](https://github.com/akemin-dayo/AppSync)
  
-To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync
+To setup Theos for macOS you need to move this directory, move it back after you've successfully compiled AppSync:
 
 `mv ~/theos/vendor/include/IOKit ~/theos/vendor/include/IOKit.bak`
 
@@ -283,7 +313,7 @@ Put both of them in: `/Library/TweakInject`
 
 Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps. Place the script in `/usr/local/bin`
 
-Add this to your .zshrc
+Add this to your .zshrc:
 
 `alias sign="sudo /usr/local/bin/adhoc_app.sh"`
 
@@ -300,7 +330,7 @@ By default the root filesystem is not mounted as r/w when starting macOS. This c
 
 Add the plist file `com.nathan.mount.plist` to `/Library/LaunchDaemons` to automatically mount the root filesystem as read/write on boot.
 
-Run these two commands after moving the file, then reboot.
+Run these two commands after moving the file, then reboot:
 
 `sudo chmod 644 /Library/LaunchDaemons/com.nathan.mount.plist`
 
