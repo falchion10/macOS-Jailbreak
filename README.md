@@ -232,13 +232,19 @@ First install zstd from homebrew:
 
 Then download the Procursus bootstrap:
 
-```curl -L https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-arm64.tar.zst -o bootstrap.tar.zst```
+```
+curl -L https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-arm64.tar.zst -o bootstrap.tar.zst
+```
 
 Run these commands to install Procursus:
 
-```zstd -d bootstrap.tar.zst```
+```
+zstd -d bootstrap.tar.zst
+```
 
-```sudo tar -xpkf bootstrap.tar -C /```
+```
+sudo tar -xpkf bootstrap.tar -C /
+```
 
 ```
 echo 'PATH="/opt/procursus/bin:/opt/procursus/sbin:/opt/procursus/games:$PATH"
@@ -246,11 +252,17 @@ CPATH="$CPATH:/opt/procursus/include"
 LIBRARY_PATH="$LIBRARY_PATH:/opt/procursus/lib"' >> ~/.zshrc
 ```
 
-```source ~/.zshrc```
+```
+source ~/.zshrc
+```
 
-```sudo apt update```
+```
+sudo apt update
+```
 
-```sudo apt full-upgrade```
+```
+sudo apt full-upgrade
+```
 
 Now that you have Procursus installed you will need to use ldid on dyld:
 
