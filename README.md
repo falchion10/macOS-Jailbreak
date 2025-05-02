@@ -16,7 +16,7 @@ Let us begin!
 # 1. Kernel Patches
 
 
-## 1a. Compiling & Using [img4](https://github.com/xerub/img4lib)
+## 1a. Compiling [img4](https://github.com/xerub/img4lib)
 
 First, we will need to do two kernel patches, a trustcache patch, along with a file system read/write patch.
 
@@ -58,6 +58,8 @@ make
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
+##1b. Using img4 on the kernelcache
+
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory:
 
 ```
@@ -90,7 +92,7 @@ Copy the extracted kernelcache to new file, allowing us to create a patched vers
 cp -v kcache.raw kcache.patched
 ```
 
-## 1b. Trustcache Patch
+## 1c. Trustcache Patch
 
 We will be using Radare2, a reverse engineering tool, for the first patch, install it using homebrew:
 
@@ -113,21 +115,21 @@ When Radare2 is finished initializing all the kexts, type in this command to fin
 [Source](https://github.com/palera1n/PongoOS/blob/iOS15/checkra1n/kpf/trustcache.c) for the trustcache patch
 
 
-We need to write new instructions in Radare2, to do this type "V" to enter visual mode, then type "g" and paste in the address you found earlier. 
-When you are at the address use "j" and "k" to scroll up and down respectively. 
-We will need to scroll up a few lines. Once you've scrolled up type "A" to enter the assembler mode. 
+We need to write new instructions in Radare2, to do this type `V` to enter visual mode, then type `g` and paste in the address you found earlier. 
+When you are at the address use `j` and `k` to scroll up and down respectively. 
+We will need to scroll up a few lines. Once you've scrolled up type `A` to enter the assembler mode. 
 You're going to want to find the `AMFIIsCDHashInTrustCache` function, below this function you should see an instruction named `pacibsp`. 
-Save the address for this instruction "q" to quit out of assembler mode, you should be back in visual mode. 
-Type "g" and go to the address of the `pacibsp` instruction, then type "a" to enter assembler mode again. 
+Save the address for this instruction `q` to quit out of assembler mode, you should be back in visual mode. 
+Type `g` and go to the address of the `pacibsp` instruction, then type `A` to enter assembler mode again. 
 Once in assembler mode at the instruction replace the instructions with:
 
 ```asm
 mov x0, 1; cbz x2, .+0x8; str x0, [x2]; ret
 ```
 
-Press "return" to save the changes and press "q" to exit assembler mode, then press "q" and "return" again to exit Radare2.
+Press `return` to save the changes and press `q` to exit assembler mode, then press `q` and `return` again to exit Radare2.
 
-## 1c. Read/Write RootFS Patch
+## 1d. Read/Write RootFS Patch
 
 Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin.
 
@@ -137,11 +139,11 @@ Use KPlooshFinder on our patched kernel to apply the second patch:
 KPlooshFinder kcache.patched kcache.readwrite
 ```
 
-## 1d. Reducing Security & Installing the Kernel
+## 1e. Reducing Security & Installing the Kernel
 
-We will now need to boot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see "Continue holding for startup options...". Keep holding down the power button until you see "Loading startup options...", at this point you can stop holding the button down.
+We will now need to boot into 1 True Recovery (1TR). To enter 1TR shut down your Mac, do not press restart. Once your Mac is off press and hold down the power button, you will see `Continue holding for startup options...`. Keep holding down the power button until you see `Loading startup options...`, at this point you can stop holding the button down.
 
-Once you are in startup options menu select "Options" with the settings icon. Type your password to authenticate then open terminal by pressing "Utilities" at the top of the menu bar.
+Once you are in startup options menu select `Options` with the settings icon. Type your password to authenticate then open terminal by pressing `Utilities` at the top of the menu bar.
 
 We will need to disable System Integrity Protection, the Secured System Volume, and Gatekeeper. We will also need to install the custom kernel, along with reboot back into normal mode. Run these 4 commands:
 
@@ -237,7 +239,7 @@ Demangled Symbol:
 _dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 ```
 
-After finding the symbol right click it, select "Patch", then "Assemble" and then paste in this code and press return:
+After finding the symbol right click it, select `Patch`, then `Assemble` and then paste in this code and press return:
 
 ```asm
 mov x0, 0xdf; ret
@@ -426,7 +428,7 @@ Put both of them in: `/Library/TweakInject`
 
 Reboot once more and you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use the .sh script provided to resign apps. Place the script in `/usr/local/bin`
 
-Add this to your .zshrc:
+Run this command to add an alias to your .zshrc file for the .sh script:
 
 ```
 echo 'alias sign="sudo /usr/local/bin/adhoc_app.sh"' >> ~/.zshrc
@@ -477,7 +479,7 @@ If you aren't on the latest version of macOS and hate seeing the little notifica
 ## Installing [tccplus](https://github.com/jslegendre/tccplus) to manage application permissions
 
 By default, whenever you disable SIP applications can no longer request permissions for things such as the microphone, camera, etc. We can use tccplus to manually grant apps permissions.
-Compile tccplus from source, or use the given binary and place it in `/usr/local/bin`. Read the docs on how it works. I have created two shell scripts that allow you to easily grant permissions to apps by just dragging the app's .app file in /Applications. Add these two scripts to your `.zshrc`.
+Compile tccplus from source, or use the given binary and place it in `/usr/local/bin`. Read the docs on how it works. I have created two shell scripts that allow you to easily grant permissions to apps by just dragging the app's .app file from /Applications to a terminal window. Add these two scripts to your `.zshrc`.
 
 Run `tccadd [SERVICE] /Applications/App.app`
 
