@@ -55,7 +55,7 @@ Compile the project:
 make
 ```
 
-You will now have a binary of img4, I recommend moving it to /usr/local/bin
+You will now have a binary of `img4`, I recommend moving it to `/usr/local/bin`
 
 ## 1b. Using img4 on the kernelcache
 
@@ -130,7 +130,7 @@ Press `return` to save the changes and press `q` to exit assembler mode, then pr
 
 ## 1d. Read/Write RootFS Patch
 
-Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to /usr/local/bin.
+Now we need to apply the read/write rootfs patch. Use KPlooshFinder to apply this patch. I recommend moving the binary to `/usr/local/bin`.
 
 Use KPlooshFinder on our patched kernel to apply the second patch:
 
@@ -362,7 +362,7 @@ git clone https://github.com/tealbathingsuit/ellekit
 MAC=1 make
 ```
 
-There should be a tar.gz file in the packages folder inside the repo. Rename the file to ellekit.tar.gz then run this command (you'll get an error about timestamps, ignore it):
+There should be a tar.gz file in the packages folder inside the repo. Rename the file to `ellekit.tar.gz` then run this command (you'll get an error about timestamps, ignore it):
 
 ```
 sudo tar -xvf ellekit.tar.gz -C /
@@ -380,7 +380,7 @@ Copy the loader to /Library/TweakInject/loader:
 sudo cp -v /usr/local/bin/loader /Library/TweakInject/loader
 ```
 
-Place the launch daemon from com.evln.ellekit.startup.plist to /Library/LaunchDaemons:
+Place the launch daemon named `com.evln.ellekit.startup.plist` to `/Library/LaunchDaemons`:
 
 ```
 sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist
