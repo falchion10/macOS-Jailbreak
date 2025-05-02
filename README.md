@@ -58,7 +58,7 @@ make
 
 You will now have a binary of img4, I recommend moving it to /usr/local/bin
 
-##1b. Using img4 on the kernelcache
+## 1b. Using img4 on the kernelcache
 
 To keep things organized I'm going to be creating a folder named Jailbreak in my home directory:
 
