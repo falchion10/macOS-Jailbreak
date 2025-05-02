@@ -358,7 +358,15 @@ Run these two commands after moving the file, then reboot:
 
 ## Removing software update notifications
 
-`sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup`
+```
+sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup
+```
+
+To undo the change:
+
+```
+sudo mv /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app.backup /System/Library/PrivateFrameworks/SoftwareUpdate.framework/Versions/A/Resources/SoftwareUpdateNotificationManager.app
+```
 
 If you aren't on the latest version of macOS and hate seeing the little notification that pops up every day or so telling you to update to the newest version, this patch should fix that.
 
