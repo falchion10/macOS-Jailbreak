@@ -246,7 +246,7 @@ mov x0, 0xdf; ret
 
 ## 2b. Palera1n's DYLD_IN_CACHE Patch
 
-Search DYLD_IN_CACHE (Find Type: Text (Disassembly)
+Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly)
 
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 
@@ -435,6 +435,10 @@ reboot
 ```
 
 After the reboot you should now have a jailbroken Mac machine. Double click any ipa and it will successfully install. Installed apps will need to be resigned before they are able to run. You can use `adhoc_app.sh` to resign apps. Place `adhoc_app.sh` in `/usr/local/bin`
+
+```
+chmod +x /usr/local/bin/adhoc_app.sh
+```
 
 Run this command to add an alias to your .zshrc file for `adhoc_app.sh`:
 
