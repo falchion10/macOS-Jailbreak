@@ -288,6 +288,59 @@ sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
 ```
 
+## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4+, including macOS 26 Tahoe)
+
+Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly)
+
+Then go to the xref (Cross references, should be located at the bottom left of Binja)
+
+Find this pattern:
+
+```asm
+00008118  00050090   adrp    x0, 0xa8000
+0000811c  00201191   add     x0, x0, #0x448  {dyld4::sSyscallDelegate}
+00008120  0ba80094   bl      dyld4::SyscallDelegate::internalInstall
+00008124  e0000034   cbz     w0, 0x8140
+
+00008128  a0035af8   ldur    x0, [x29, #-0x60 {var_70}]
+0000812c  650c0094   bl      dyld4::KernelArgs::findEnvp
+00008130  21040090   adrp    x1, 0x8c000
+00008134  21d83291   add     x1, x1, #0xcb6  {data_8ccb6, "DYLD_IN_CACHE"}
+00008138  a4f2ff97   bl      __simple_getenv
+0000813c  600000b5   cbnz    x0, 0x8148
+
+00008140  16030035   cbnz    w22, 0x81a0
+
+00008144  f0000014   b       0x8504
+
+00008148  08004039   ldrb    w8, [x0]
+0000814c  1fc50071   cmp     w8, #0x31
+00008150  e0010054   b.eq    0x818c
+
+00008154  1fc10071   cmp     w8, #0x30
+00008158  61000054   b.ne    0x8164
+
+0000815c  08044039   ldrb    w8, [x0, #0x1]
+00008160  281d0034   cbz     w8, 0x8504
+
+```
+
+Keep note of the `cbz w8` address after the `cmp`, `b.eq`, `cmp`, `b.ne`, and `ldrb`.
+
+This address is where you will need to branch at where you see `bl dyld4::SyscallDelegate::internalInstall` is.
+
+Essentially what we'll be doing is replacing `bl dyld4::SyscallDelegate::internalInstall` with `b 0x8504`.
+
+To do this we need to calculate an offset. We need to subtract the address of the `bl dyld4::SyscallDelegate::internalInstall` from our `cbz w8` address. 
+
+We need to do `0x8504 - 0x8120` and then convert that value to the number of bytes away we will be.
+
+If you do the subtraction, then convert to decimal you will get that `8504 - 8120` is `3E4` which is 996 in decimal.
+
+Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`
+
+Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Developer Beta 1 (25A5279m)
+
 ## 2c. Installing Procursus & Using ldid
 
 You'll need to install ldid from the procursus repo, follow these steps to do so.
