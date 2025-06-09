@@ -639,17 +639,17 @@ Thank you to all these people for making this guide or else it wouldn't have bee
 
 [Mineek](https://x.com/mineekdev) for the [original guide](https://gist.github.com/mineek/065945080e5bd2cb71092c08d04f6555) and helping me a lot on Discord: https://github.com/mineek
 
-[Nathan](https://x.com/dedbeddedbed) for the original guide, adhoc_app.sh script, and for helping me a lot on Discord: https://github.com/verygenericname
+[Nathan](https://x.com/dedbeddedbed) for the [original guide](https://gist.github.com/mineek/065945080e5bd2cb71092c08d04f6555), `adhoc_app.sh` script, and for helping me a lot on Discord: https://github.com/verygenericname
 
-[Evelyn](https://x.com/eveiyneee) for Ellekit: https://github.com/tealbathingsuit
+[Evelyn](https://x.com/eveiyneee) for `Ellekit`: https://github.com/tealbathingsuit
 
-[Karen](https://x.com/akemin_dayo) for AppSync: https://github.com/akemin-dayo
+[Karen](https://x.com/akemin_dayo) for `AppSync`: https://github.com/akemin-dayo
 
-[Ploosh](https://x.com/__m256i) for KPlooshFinder: https://github.com/plooshi
+[Ploosh](https://x.com/__m256i) for `KPlooshFinder`: https://github.com/plooshi
 
 [Xerub](https://x.com/xerub/) for `img4lib`: https://github.com/xerub
 
-[Jeremy Legendre](https://github.com/jslegendre) for tccplus: https://github.com/jslegendre/tccplus
+[Jeremy Legendre](https://github.com/jslegendre) for `tccplus`: https://github.com/jslegendre/tccplus
 
 
 
