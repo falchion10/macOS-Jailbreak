@@ -237,7 +237,7 @@ __ZN5dyld413ProcessConfig8Security7getAMFIERKNS0_7ProcessERNS_15SyscallDelegateE
 Demangled Symbol:
 
 ```cpp
-_dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
+dyld4::ProcessConfig::Security::getAMFI(dyld4::ProcessConfig::Process const&, dyld4::SyscallDelegate&)
 ```
 
 After finding the symbol right click it, select `Patch`, then `Assemble` and then paste in this code and press return:
