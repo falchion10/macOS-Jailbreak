@@ -1,4 +1,4 @@
-## macOS-Jailbreak
+## macOS Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
 Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, and 26.0 Developer Beta 1. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
@@ -632,7 +632,8 @@ tccrem() {
   tccplus reset "$service" "$bundle_id"
 }
 ```
-##Credits
+
+# Credits
 
 Thank you to all these people for making this guide or else it wouldn't have been possible!
 [Mineek](https://x.com/mineekdev) for the [original guide](https://gist.github.com/mineek/065945080e5bd2cb71092c08d04f6555) and helping me a lot on Discord: https://github.com/mineek
