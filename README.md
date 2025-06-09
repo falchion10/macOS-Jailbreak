@@ -1,7 +1,7 @@
 ## macOS-Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
-Tested on macOS 14.7.1, 15.3, 15.3.1, and 15.3.2. Should work on any macOS 14 version and any macOS 15 version below 15.3.2. This currently does NOT work on 15.4+ because the palera1n dyld patch is broken. This should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
+Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, and 26.0 Developer Beta 1. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
 
 This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) please do not continue with the guide. Disabling SIP will make it so you can't install any iOS/iPadOS apps from the App Store, but this isn't an issue as any app will be sideloadable after the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
@@ -220,7 +220,9 @@ The patches for dyld are:
 
 [Dopamine's Patch](https://github.com/opa334/Dopamine/blob/2.x/BaseBin/libjailbreak/src/basebin_gen.m#L7)
 
-[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51)
+[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51) (For macOS 15.3.2 and below)
+
+[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 15.4 Developer Beta 1 and above)
 
 ## 2a. Dopamine's Patch
 
@@ -244,9 +246,9 @@ After finding the symbol right click it, select `Patch`, then `Assemble` and the
 mov x0, 0xdf; ret
 ```
 
-## 2b. Palera1n's DYLD_IN_CACHE Patch
+## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.3.2 and below)
 
-Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly)
+Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
 
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 
@@ -288,9 +290,9 @@ sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
 ```
 
-## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4+, including macOS 26 Tahoe)
+## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4 Developer Beta 1 and above, including macOS 26 Tahoe)
 
-Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly)
+Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
 
 Then go to the xref (Cross references, should be located at the bottom left of Binja)
 
@@ -327,7 +329,7 @@ Find this pattern:
 
 Keep note of the `cbz w8` address after the `cmp`, `b.eq`, `cmp`, `b.ne`, and `ldrb`.
 
-This address is where you will need to branch at where you see `bl dyld4::SyscallDelegate::internalInstall` is.
+This address is where you will need to branch at where you see `bl dyld4::SyscallDelegate::internalInstall`.
 
 Essentially what we'll be doing is replacing `bl dyld4::SyscallDelegate::internalInstall` with `b 0x8504`.
 
@@ -335,11 +337,11 @@ To do this we need to calculate an offset. We need to subtract the address of th
 
 We need to do `0x8504 - 0x8120` and then convert that value to the number of bytes away we will be.
 
-If you do the subtraction, then convert to decimal you will get that `8504 - 8120` is `3E4` which is 996 in decimal.
+If you do the subtraction, then convert to decimal you will get that `8504 - 8120` is `3E4`, which is 996 in decimal.
 
-Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`
+Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`.
 
-Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Developer Beta 1 (25A5279m)
+Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Developer Beta 1 (25A5279m).
 
 ## 2c. Installing Procursus & Using ldid
 
