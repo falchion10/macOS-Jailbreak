@@ -343,6 +343,16 @@ Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInsta
 
 Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Developer Beta 1 (25A5279m).
 
+Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
+
+```
+sudo mount -uw /
+```
+
+```
+sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
+```
+
 ## 2c. Installing Procursus & Using ldid
 
 You'll need to install ldid from the procursus repo, follow these steps to do so.
