@@ -173,7 +173,7 @@ reboot
 We need to add boot arguments to further relax system restrictions, along with disable Gatekeeper. Run these commands (the `-v` is optional, all it does is enable verbose booting):
 
 ```
-sudo nvram boot-args="-arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0 -v"
+sudo nvram boot-args="-v -arm64e_preview_abi amfi_get_out_of_my_way=1 ipc_control_port_options=0"
 ```
 
 Disable Gatekeeper on macOS 14 and below:
