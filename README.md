@@ -230,7 +230,7 @@ The patches for dyld are:
 
 ## 2a. Dopamine's Patch
 
-You'll need a reverse engineering tool for these next patches. I personally use Binary Ninja but you can use something like IDA Pro as well. Both are paid and cost a lot of money so for the sake of simplicity I'm going to offer a link to pirate both. I trust and use Binary Ninja from this site, if you don't wanna use it though you can get it from some other means.
+You'll need a reverse engineering tool for these next patches. I personally use Binary Ninja but you can use something like IDA Pro as well. Both are paid and cost a lot of money so for the sake of simplicity I'm going to offer a link to pirate both. I trust and use Binary Ninja from this site, if you don't wanna use it though you can get it through some other means.
 
 Binary Ninja --> https://appstorrent.ru/1879-binary-ninja.html
 
