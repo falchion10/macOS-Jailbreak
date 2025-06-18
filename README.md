@@ -1,7 +1,7 @@
 ## macOS Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
-Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, and 26.0 Developer Beta 1. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
+Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, and 26.0 Dev Beta 1. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
 
 This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) please do not continue with the guide. Disabling SIP will make it so you can't install any iOS/iPadOS apps from the App Store, but this isn't an issue as any app will be sideloadable after the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
@@ -66,7 +66,11 @@ mkdir -p ~/Jailbreak
 ```
 
 ```
-cd ~/Jailbreak mkdir KPatch
+cd ~/Jailbreak
+```
+
+```
+mkdir KPatch
 ```
 
 ```
@@ -222,7 +226,7 @@ The patches for dyld are:
 
 [Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51) (For macOS 15.3.2 and below)
 
-[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 15.4 Developer Beta 1 and above)
+[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 15.4 and above)
 
 ## 2a. Dopamine's Patch
 
@@ -290,7 +294,7 @@ sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
 ```
 
-## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4 Developer Beta 1 and above, including macOS 26 Tahoe)
+## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4 and above)
 
 Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
 
@@ -427,10 +431,10 @@ git clone https://github.com/tealbathingsuit/ellekit
 MAC=1 make
 ```
 
-There should be a tar.gz file in the packages folder inside the repo. Rename the file to `ellekit.tar.gz` then run this command (you'll get an error about timestamps, ignore it):
+There should be a tar file in the packages folder inside the repo. Rename the file to `ellekit.tar` then run this command (you might get an error about timestamps, ignore it):
 
 ```
-sudo tar -xvf ellekit.tar.gz -C /
+sudo tar -xvf ellekit.tar -C /
 ```
 
 Resign the loader with `loader.xml`:
@@ -451,7 +455,7 @@ Place the launch daemon named `com.evln.ellekit.startup.plist` to `/Library/Laun
 sudo cp -v com.evln.ellekit.startup.plist /Library/LaunchDaemons/com.evln.ellekit.startup.plist
 ```
 
-Set the correct permissions & reboot:
+Set the correct permissions:
 
 ```
 sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist
@@ -459,10 +463,6 @@ sudo chmod 644 /Library/LaunchDaemons/com.evln.ellekit.startup.plist
 
 ```
 sudo chown root:wheel /Library/LaunchDaemons/com.evln.ellekit.startup.plist
-```
-
-```
-reboot
 ```
 
 Make a CydiaSubstrate symlink for easy tweak injection:
@@ -473,6 +473,10 @@ sudo mkdir -p /Library/Frameworks/CydiaSubstrate.framework
 
 ```
 sudo ln -s /Library/TweakInject/ellekit.dylib /Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate
+```
+
+```
+reboot
 ```
 
 # 4. Compiling & Installing [AppSync](https://github.com/akemin-dayo/AppSync)
