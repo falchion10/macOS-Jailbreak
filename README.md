@@ -345,7 +345,7 @@ If you do the subtraction, then convert to decimal you will get that `8504 - 812
 
 Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`.
 
-Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Developer Beta 1 (25A5279m).
+Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Dev Beta 1 (25A5279m).
 
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
 
