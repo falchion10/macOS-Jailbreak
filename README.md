@@ -233,6 +233,7 @@ The patches for dyld are:
 You'll need a reverse engineering tool for these next patches. I personally use Binary Ninja but you can use something like IDA Pro as well. Both are paid and cost a lot of money so for the sake of simplicity I'm going to offer a link to pirate both. I trust and use Binary Ninja from this site, if you don't wanna use it though you can get it from some other means.
 
 Binary Ninja --> https://appstorrent.ru/1879-binary-ninja.html
+
 IDA Pro --> https://appstorrent.ru/1870-ida-pro.html
 
 Open dyld in Binary Ninja, make sure to select the arm64e slice, then go to the symbol for the Dopamine patch, and set it to (if you can't find the symbol, try searching for the demangled one):
