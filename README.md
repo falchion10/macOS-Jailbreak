@@ -1,7 +1,7 @@
 ## macOS Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
-Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, 15.5, and 26.0 Dev Beta 1. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
+Tested on macOS 14.7.1, 15.3, 15.3.1, 15.3.2, 15.5, 26.0db1, and 26.0db2. I recently updated the guide to support macOS 15.4+. If you are on macOS 15.4+ you will need to do the alternate palera1n DYLD_IN_CACHE patch. This guide should also work on macOS 13, your milage may vary. No one has tested on macOS 11 or 12 so proceed with caution on those versions.
 
 This guide is very technical and will take some time to complete. If you aren't comfortable disabling System Integrity Protection (SIP) please do not continue with the guide. Disabling SIP will make it so you can't install any iOS/iPadOS apps from the App Store, but this isn't an issue as any app will be sideloadable after the guide. This will lower system security substantially, but that's kind of the goal. This guide will allow you to moddify system files and folders, install any iOS app in the form of a .ipa on your system, and use iOS tweaks in the form of dylibs on macOS with the help of Ellekit.
 
@@ -119,7 +119,7 @@ When Radare2 is finished initializing all the kexts, type in this command to fin
 
 
 We need to write new instructions in Radare2, to do this type `V` to enter visual mode, then type `g` and paste in the address you found earlier. 
-When you are at the address use `j` and `k` to scroll up and down respectively. 
+When you are at the address use `j` and `k` to scroll down and up respectively. 
 We will need to scroll up a few lines. Once you've scrolled up type `A` to enter the assembler mode. 
 You're going to want to find the `AMFIIsCDHashInTrustCache` function, below this function you should see an instruction named `pacibsp`. 
 Save the address for this instruction `q` to quit out of assembler mode, you should be back in visual mode. 
@@ -351,7 +351,7 @@ If you do the subtraction, then convert to decimal you will get that `8504 - 812
 
 Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`.
 
-Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Dev Beta 1 (25A5279m).
+Then you want to type `b .+996`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 26.0 Dev Beta 2 (25A5295e).
 
 Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
 
