@@ -651,7 +651,7 @@ tccrem() {
 
 ## Removing XProtect and MRT
 
-This requires `/` to be mounted with r/w permissions. This isn't really necessary, but I wanted to include it for people who really hate macOS's security features and wanted to fully get rid of all of them.
+This requires `/` to be mounted with r/w permissions. This isn't really necessary, but I wanted to include it for people who really hate macOS's security features and wanted to fully get rid of all of them. This also breaks weird things like trying to unarchive files.
 
 ```
 sudo mv /Library/Apple/System/Library/CoreServices/MRT.app /Library/Apple/System/Library/CoreServices/MRT.app.backup
