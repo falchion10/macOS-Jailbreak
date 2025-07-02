@@ -649,6 +649,44 @@ tccrem() {
 }
 ```
 
+## Removing XProtect and MRT
+
+This requires `/` to be mounted with r/w permissions. This isn't really necessary, but I wanted to include it for people who really hate macOS's security features and wanted to fully get rid of all of them.
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/MRT.app /Library/Apple/System/Library/CoreServices/MRT.app.backup
+```
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/XProtect.app /Library/Apple/System/Library/CoreServices/XProtect.app.backup
+```
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/XProtect.bundle /Library/Apple/System/Library/CoreServices/XProtect.bundle.backup
+```
+
+```
+sudo mv /System/Library/PrivateFrameworks/XprotectFramework.framework /System/Library/PrivateFrameworks/XprotectFramework.framework.backup
+```
+
+To undo the change:
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/MRT.app.backup /Library/Apple/System/Library/CoreServices/MRT.app
+```
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/XProtect.app.backup /Library/Apple/System/Library/CoreServices/XProtect.app
+```
+
+```
+sudo mv /Library/Apple/System/Library/CoreServices/XProtect.bundle.backup /Library/Apple/System/Library/CoreServices/XProtect.bundle
+```
+
+```
+sudo mv /System/Library/PrivateFrameworks/XprotectFramework.framework.backup /System/Library/PrivateFrameworks/XprotectFramework.framework
+```
+
 # Credits
 
 Thank you to all these people for making this guide or else it wouldn't have been possible!
