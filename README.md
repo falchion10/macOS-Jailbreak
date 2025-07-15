@@ -224,9 +224,11 @@ The patches for dyld are:
 
 [Dopamine's Patch](https://github.com/opa334/Dopamine/blob/2.x/BaseBin/libjailbreak/src/basebin_gen.m#L7)
 
-[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51) (For macOS 15.3.2 and below)
+[palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/c1015df65dad3704ace43feb6ebc310542c60422/src/fakedyld/patch_dyld/patcher.c#L51) (For macOS 15.3.2 and below)
 
-[Palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 15.4 and above)
+[palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 15.4b1 - 15.6b3 and above)
+
+[palera1n's DYLD_IN_CACHE Patch](https://github.com/palera1n/jbinit/blob/ba9d8a12ba5f96b758ff98d41e9f577548d285d6/src/fakedyld/patch_dyld/patcher.c#L64) (For macOS 26.0b1 and above and above)
 
 ## 2a. Dopamine's Patch
 
@@ -252,7 +254,7 @@ After finding the symbol right click it, select `Patch`, then `Assemble` and the
 mov x0, 0xdf; ret
 ```
 
-## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.3.2 and below)
+## 2b. palera1n's DYLD_IN_CACHE Patch (For macOS 15.3.2 and below)
 
 Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
 
@@ -296,7 +298,58 @@ sudo mount -uw /
 sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
 ```
 
-## 2b. Palera1n's DYLD_IN_CACHE Patch (For macOS 15.4 and above)
+## 2b. palera1n's DYLD_IN_CACHE Patch (For macOS 15.4b1 - 15.6b3)
+
+Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
+
+Then go to the xref (Cross references, should be located at the bottom left of Binja)
+
+Find this pattern:
+
+```asm
+00006488  e00400f0   adrp    x0, 0xa5000
+0000648c  00203c91   add     x0, x0, #0xf08  {dyld4::sSyscallDelegate}
+00006490  aea60094   bl      dyld4::SyscallDelegate::internalInstall
+00006494  e0000034   cbz     w0, 0x64b0
+
+00006498  a0035bf8   ldur    x0, [x29, #-0x50 {var_60}]
+0000649c  a50b0094   bl      dyld4::KernelArgs::findEnvp
+000064a0  21040090   adrp    x1, 0x8a000
+000064a4  21182c91   add     x1, x1, #0xb06  {data_8ab06, "DYLD_IN_CACHE"}
+000064a8  58f9ff97   bl      __simple_getenv
+000064ac  c01500b5   cbnz    x0, 0x6764
+
+000064b0  d61c0034   cbz     w22, 0x6848
+
+```
+
+Keep note of the `cbz w22` address at the end of the pattern.
+
+This address is where you will need to branch at where you see `bl dyld4::SyscallDelegate::internalInstall`.
+
+Essentially what we'll be doing is replacing `bl dyld4::SyscallDelegate::internalInstall` with `b 0x8504`.
+
+To do this we need to calculate an offset. We need to subtract the address of the `bl dyld4::SyscallDelegate::internalInstall` from our `cbz w22` address. 
+
+We need to do `0x6848 - 0x6490` and then convert that value to the number of bytes away we will be.
+
+If you do the subtraction, then convert to decimal you will get that `6848 - 6490` is `3B8`, which is 952 in decimal.
+
+Next, what you wanna do is right click `bl dyld4::SyscallDelegate::internalInstall`, then select `Patch` then `Assemble`.
+
+Then you want to type `b .+952`, or whatever your decimal number is, it will be different depending on OS versions. This one was done with macOS 15.5.
+
+Run these two commands to mount the root filesystem as read/write, and to create another backup of dyld:
+
+```
+sudo mount -uw /
+```
+
+```
+sudo cp -v /usr/lib/dyld /usr/lib/dyld.backup
+```
+
+## 2b. palera1n's DYLD_IN_CACHE Patch (For macOS 26.0b1 and above)
 
 Search `DYLD_IN_CACHE` (Find Type: Text (Disassembly))
 
