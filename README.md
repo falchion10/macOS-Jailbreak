@@ -1,3 +1,8 @@
+# PLEASE USE THE [WIKI](https://github.com/falchion10/macOS-Jailbreak/wiki) PAGE
+Please use the wiki guide instead as it's easier and more consice.
+
+I'll probably stop updating the readme eventually and only update the wiki guide.
+
 ## macOS Jailbreak
 Tutorial on how to jailbreak Apple Silicon Macs
 
